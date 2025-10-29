@@ -1,13 +1,31 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from "react-router-dom";
 
-const LoginPage = () => {
+const SignupPage = () => {
     const navigate = useNavigate();
     return (
         <div className="flex items-center justify-center h-full">
-            <div className="bg-dark-800 p-8 rounded-lg shadow-xl w-full max-w-sm">
-                <h2 className="text-2xl font-bold text-light text-center mb-6">Login</h2>
+            <div className="bg-dark-800 p-8 rounded shadow-xl w-full max-w-sm">
+                <h2 className="text-2xl font-bold text-light text-center mb-6">
+                    Create Account
+                </h2>
+
                 <form className="space-y-4">
+                    <div>
+                        <label
+                            htmlFor="name"
+                            className="block text-sm font-medium text-muted mb-2"
+                        >
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            className="w-full bg-dark-900 border border-dark-700 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-accent"
+                        />
+                    </div>
+
                     <div>
                         <label
                             htmlFor="email"
@@ -42,16 +60,18 @@ const LoginPage = () => {
                         type="submit"
                         className="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2 px-4 rounded-lg transition-colors"
                     >
-                        Login
+                        Sign Up
                     </button>
-
                 </form>
+
                 <p className="text-sm text-muted text-center mt-4">
-                    Don't have an account?{" "}
-                    <span onClick={() => navigate("/signup")} className="text-accent hover:underline">Sign up</span>
+                    Already have an account?{" "}
+                    <span onClick={() => navigate("/login")} className="text-accent hover:underline">
+                        Login
+                    </span>
                 </p>
             </div>
         </div>
     )
 }
-export default LoginPage
+export default SignupPage
