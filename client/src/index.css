@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+/*Customize Tailwind*/
+@theme {
+  --color-dark-900: #111827;
+  --color-dark-800: #1F2937;
+  --color-dark-700: #374151;
+
+  --color-accent: #3B82F6;
+  --color-accent-hover: #2563EB;
+  --color-highlight: #10B981;
+
+  --color-light: #F9FAFB;
+  --color-muted: #9CA3AF;
+}

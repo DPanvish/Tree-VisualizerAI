@@ -1,0 +1,7 @@
+1) First install vite in the client folder "npm create vite@latest ./"
+2) Setup the tailwindcss latest version from the docs "https://tailwindcss.com/docs/installation/using-vite"
+3) Install React Router for routing and use it to navigate "npm install react-router-dom"
+4) Install React flow for tree visualizer "npm install reactflow"
+5) Install Heroicons for icons "npm install @heroicons/react"
+6) Install Redus for state management and Axios for API calls
+   "npm install @reduxjs/toolkit react-redux axios"
