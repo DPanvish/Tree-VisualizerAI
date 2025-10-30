@@ -1,20 +1,10 @@
-import React, {useCallback} from 'react'
+import React, {useCallback, useMemo} from 'react'
 import ReactFlow, {Background, Controls, addEdge as rfAddEdge} from "reactflow";
 import "reactflow/dist/style.css";
 
 // Redux Imports
 import { useSelector, useDispatch } from 'react-redux';
-import { addEdge, setTreeState } from '../../redux/slice/treeSlice.js';
-
-// We'll get nodes and edges from Redux later
-// const initialNodes = [
-//     {
-//         id: "1",
-//         position: {x: 250, y: 5},
-//         data: {Label: "Root Node"}
-//     },
-// ];
-// const initialEdges = [];
+import { addEdge, setSelectedNode } from '../../redux/slice/treeSlice.js';
 
 const controlStyles = {
     backgroundColor: "#1F2937",
@@ -29,9 +19,9 @@ const TreeVisualizer = () => {
     const dispatch = useDispatch();
 
     // State from Redux
-    const { nodes, edges } = useSelector((state) => state.tree);
+    const { nodes, edges, selectedNodeId, highlightedNodeId } = useSelector((state) => state.tree);
 
-    // Dispatch habdlers
+    // Dispatch handlers
     const onNodesChange = (changes) => {
         // Placeholder for future node updates
         // For now, We'll let the AI manage the state
@@ -54,13 +44,57 @@ const TreeVisualizer = () => {
         [dispatch]
     );
 
+    const onSelectionChange = useCallback(
+        ({nodes}) => {
+            // Set selectedNodeId to the first selected node, or null if none
+            dispatch(setSelectedNode(nodes.length > 0 ? nodes[0].id : null))
+        },
+        [dispatch]
+    );
+
+    // Style nodes based on selection
+    const memoizedNodes = useMemo(() => {
+        return nodes.map((node) => {
+            const isSelected = node.id === selectedNodeId;
+            const isHighlighted = node.id === highlightedNodeId;
+
+            let style = {
+                border: "1px solid var(--color-dark-700)",
+                boxShadow: "none",
+                transition: "all 0.3s eas,e"
+            };
+
+            if(isSelected){
+                style.border = "2px solid var(--color-accent)";
+                style.boxShadow = "0 0 10px var(--color-accent)";
+            }
+
+            if(isHighlighted){
+                style.border = "2px solid var(--color-highlight)";
+                style.backgroundColor = "var(--color-highlight)";
+                style.color = "#FFFFFF";
+                style.boxShadow = "0 0 15 var(--color-highlight)";
+            }
+
+            return {
+                ...node,
+                style: {
+                    ...node.style,
+                    ...style,
+                },
+            };
+        });
+    }, [nodes, selectedNodeId, highlightedNodeId]);
+
     return (
         <div style={{height: "100%", width: "100%"}}>
             <ReactFlow
-                nodes={nodes}
+                nodes={memoizedNodes}
                 edges={edges}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
+                onConnect={onConnect}
+                onSelectionChange={onSelectionChange}
                 proOptions={proOptions}
                 fitView
             >
