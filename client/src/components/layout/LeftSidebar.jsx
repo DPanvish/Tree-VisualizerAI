@@ -22,11 +22,11 @@ const LeftSidebar = () => {
     return (
         <aside
             className={`
-                w-64 h-full bg-dark-800 p-4 flex flex-col space-y-6 border-r border-dark-700 overflow-y-auto
-                absolute md:static z-10 
-                transition-transform duration-300 ease-in-out
+                w-64 bg-dark-800 p-4 flex flex-col space-y-6 border-r border-dark-700 overflow-y-auto
+                absolute top-16 bottom-0 md:static md:top-auto md:bottom-auto md:h-full z-10 
+                transform transition-transform duration-300 ease-in-out
                 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-                md:translate-x-0
+                md:transform-none
       `}
         >
             {/* Section 1: Controls */}

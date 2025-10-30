@@ -51,7 +51,7 @@ const Navbar = () => {
                     />
                     <div className="hidden md:flex flex-col text-right">
                         <span className="text-sm font-medium text-light">User Name</span>
-                        <spac className="text-xs text-muted">user@gmail.com</spac>
+                        <span className="text-xs text-muted">user@gmail.com</span>
                     </div>
 
                     <button className="hidden md:flex items-center space-x-2 text-muted hover:text-light transition-colors">
