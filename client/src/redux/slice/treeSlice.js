@@ -1,4 +1,5 @@
-import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { applyNodeChanges, applyEdgeChanges } from "reactflow";
 
 // Find the root node
 const findRootNode = (nodes, edges) => {
@@ -122,6 +123,12 @@ const treeSlice = createSlice({
     name: "tree",
     initialState,
     reducers: {
+        applyNodeChangeToState(state, action){
+            state.nodes = applyNodeChanges(action.payload, state.nodes);
+        },
+        applyEdgeChangesToState(state, action){
+            state.edges = applyEdgeChanges(action.payload, state.edges)
+        },
         // Replaces the entire
         setTreeState(state, action){
             const {nodes, edges} = action.payload;
@@ -191,6 +198,8 @@ const treeSlice = createSlice({
 });
 
 export const {
+    applyEdgeChangesToState,
+    applyNodeChangeToState,
     setTreeState,
     addNode,
     addEdge,

@@ -4,7 +4,7 @@ import "reactflow/dist/style.css";
 
 // Redux Imports
 import { useSelector, useDispatch } from 'react-redux';
-import { addEdge, setSelectedNode } from '../../redux/slice/treeSlice.js';
+import { addEdge, setSelectedNode, applyEdgeChangesToState, applyNodeChangeToState } from '../../redux/slice/treeSlice.js';
 
 const controlStyles = {
     backgroundColor: "#1F2937",
@@ -22,15 +22,20 @@ const TreeVisualizer = () => {
     const { nodes, edges, selectedNodeId, highlightedNodeId } = useSelector((state) => state.tree);
 
     // Dispatch handlers
-    const onNodesChange = (changes) => {
-        // Placeholder for future node updates
-        // For now, We'll let the AI manage the state
-    }
+    const onNodesChange = useCallback(
+        (changes) => {
+            dispatch(applyNodeChangeToState(changes));
+        },
+        [dispatch]
+    );
 
-    const onEdgesChange = (changes) => {
-        // Placeholder for future edge updates
-        // For now, We'll let the AI manage the state
-    }
+    const onEdgesChange = useCallback(
+        (changes) => {
+            dispatch(applyEdgeChangesToState(changes));
+        },
+        [dispatch],
+    );
+
 
     // This runs when a user manually connects two nodes
     const onConnect = useCallback(
