@@ -8,6 +8,10 @@ import {
 } from "@heroicons/react/24/outline/index.js";
 import {useTheme} from "../../context/ThemeContext.jsx";
 
+// Redux Imports
+import { useDispatch } from "react-redux";
+import { resetTree } from "../../redux/slice/treeSlice.js"
+
 // A reusable button component for the sidebar
 const SidebarButton = ({icon: Icon, label}) => (
     <button className="flex items-center space-x-3 w-full p-2 rounded-lg text-light hover:bg-dark-900 transition-colors">
@@ -18,6 +22,12 @@ const SidebarButton = ({icon: Icon, label}) => (
 
 const LeftSidebar = () => {
     const {isSidebarOpen} = useTheme();
+    const dispatch = useDispatch();
+
+    // Dispatch Handler
+    const handleResetTree = () => {
+        dispatch(resetTree());
+    }
 
     return (
         <aside
@@ -57,7 +67,10 @@ const LeftSidebar = () => {
 
             {/* Reset Button at the bottom */}
             <div className="mt-auto pt-4">
-                <button className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm">
+                <button
+                    onClick={handleResetTree}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm"
+                >
                     Reset Tree
                 </button>
             </div>
