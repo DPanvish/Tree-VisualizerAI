@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # This is the name of our service
+  postgres-db:
+    # We are using the official postgres image
+    image: postgres:15
+
+    # This gives your running container a friendly name
+    container_name: treeview_postgres
+
+    # These are the credentials your database will be created with
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: treeview_db
+
+    # This connects your computer's port 5432 to the container's port 5432
+    ports:
+      - "5432:5432"
+
+    # This is very important: It saves your database data
+    # in a folder named 'pgdata' on your computer.
+    # This way, your data is safe even if you stop the container.
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

@@ -5,3 +5,23 @@
 5) Install Heroicons for icons "npm install @heroicons/react"
 6) Install Redus for state management and Axios for API calls
    "npm install @reduxjs/toolkit react-redux axios"
+7) After Completing the fronend part Create a folder for backend which is server
+8) Initialize the server folder as new Node.js Project
+   "npm init -y"
+9) Install Production Dependencies
+   Express: The server framework
+   Prisma: The ORM client for interacting with the database
+   @prisma/client: The auto-generated database client
+   cors: For cross-origin requests (React <-> Express)
+   dotenv: To manage environment variables (like DB connection string)
+   jsonwebtoken: For creating and verifying JWTs
+   bcryptjs: For hashing passwords
+   "npm install express @prisma/client prisma cors dotenv jsonwebtoken bcryptjs"
+10) Install nodemon to automatically restart your server when you make changes
+    "npm install -D nodemon"
+11) Add a dev script to your server/package.json
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js"
+    }
+12) Initialize Prisma "npx prisma init"
