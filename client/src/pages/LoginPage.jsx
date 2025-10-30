@@ -19,7 +19,7 @@ const LoginPage = () => {
         setError(null);
 
         try{
-            const response = await axios.post("/api/auth/login", {
+            const response = await axios.post("http://localhost:5000/api/auth/login", {
                 email,
                 password
             });
@@ -85,6 +85,7 @@ const LoginPage = () => {
 
                     <button
                         type="submit"
+                        onClick={handleSubmit}
                         className="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2 px-4 rounded-lg transition-colors"
                     >
                         Login
