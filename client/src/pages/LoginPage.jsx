@@ -1,8 +1,43 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+
+// Redux Imports
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../redux/slice/authSlice.js";
 
 const LoginPage = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+
+    const handleSubmit = async(e) => {
+        e.preventDefault();
+        setError(null);
+
+        try{
+            const response = await axios.post("/api/auth/login", {
+                email,
+                password
+            });
+
+            if(response.data.status === "success"){
+                const {user, token} = response.data.data;
+                dispatch(setCredentials({user, token}));
+                localStorage.setItem("userToken", token);
+                console.log("Login successful");
+                navigate("/");
+            }
+        }catch(err){
+            const message = err.response?.data?.message || "Login failed";
+            console.error("Login error:", message);
+            setError(message);
+        }
+    };
+
     return (
         <div className="flex items-center justify-center h-full bg-bg-primary">
             <div className="bg-bg-secondary p-8 rounded-lg shadow-xl w-full max-w-sm">
@@ -20,6 +55,9 @@ const LoginPage = () => {
                             type="email"
                             id="email"
                             className="w-full bg-bg-primary border border-border-accent rounded-lg px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
                         />
                     </div>
 
@@ -35,8 +73,15 @@ const LoginPage = () => {
                             type="password"
                             id="password"
                             className="w-full bg-bg-primary border border-border-accent rounded-lg px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-accent"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
                         />
                     </div>
+
+                    {error && (
+                        <p className="text-sm text-red-500 text-center">{error}</p>
+                    )}
 
                     <button
                         type="submit"

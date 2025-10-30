@@ -8,9 +8,24 @@ import {
 } from "@heroicons/react/24/solid/index.js";
 import {useTheme} from "../../context/ThemeContext.jsx";
 
+// Redux imports
+import { useDispatch, useSelector } from "react-redux";
+import { logOut } from "../../redux/slice/authSlice.js";
+import { useNavigate } from "react-router-dom";
+
 const Navbar = () => {
 
     const {theme, toggleTheme, toggleSidebar} = useTheme();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const {user} = useSelector((state) => state.auth);
+
+    const handleLogout = () => {
+        dispatch(logOut());
+        localStorage.removeItem("userToken");
+        navigate("/login");
+    }
 
     return (
         <nav className="w-full h-16 bg-bg-secondary border-b border-border-accent flex items-center justify-between px-6 shrink-0">
@@ -50,11 +65,18 @@ const Navbar = () => {
                         alt="User Profile"
                     />
                     <div className="hidden md:flex flex-col text-right">
-                        <span className="text-sm font-medium text-text-primary">User Name</span>
-                        <span className="text-xs text-text-secondary">user@gmail.com</span>
+                        <span className="text-sm font-medium text-text-primary">
+                            {user ? user.name : "Guest"}
+                        </span>
+                        <span className="text-xs text-text-secondary">
+                            {user ? user.email : ""}
+                        </span>
                     </div>
 
-                    <button className="hidden md:flex items-center space-x-2 text-text-secondary hover:text-text-primary transition-colors">
+                    <button
+                        onClick={handleLogout}
+                        className="hidden md:flex items-center space-x-2 text-text-secondary hover:text-text-primary transition-colors"
+                    >
                         <ArrowLeftOnRectangleIcon className="h-5 w-5" />
                         <span>Logout</span>
                     </button>

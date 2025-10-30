@@ -2,8 +2,8 @@ import {createSlice} from "@reduxjs/toolkit";
 
 const initialState = {
     user: null, // Hold user info
-    token: null, // Hold JWT
-    isAuthenticated: false,
+    token: localStorage.getItem("userToken"), // Hold JWT
+    isAuthenticated: !!localStorage.getItem("userToken"),
 }
 
 const authSlice = createSlice({
@@ -17,6 +17,7 @@ const authSlice = createSlice({
             state.token = token;
             state.isAuthenticated = true;
             // set token to localStorage
+            localStorage.setItem("userToken", token);
         },
         // Action to clear user/token on logout
         logOut(state){
@@ -24,6 +25,7 @@ const authSlice = createSlice({
             state.token = null;
             state.isAuthenticated = false;
             // remove token from localStorage
+            localStorage.removeItem("userToken");
         },
     },
 });

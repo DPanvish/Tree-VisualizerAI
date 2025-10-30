@@ -11,13 +11,17 @@ router.post("/signup", async (req, res) => {
     try{
         const {email, password, name} = req.body;
 
+        if(!email || !password || !name){
+            return res.status(400).json({status: "error", message: "All fields are required"})
+        }
+
         // Check is user already exists
         const existingUser = await prisma.user.findUnique({
             where: {email},
         })
 
         if(existingUser){
-            return res.status(400).json({message: "User already exists"})
+            return res.status(400).json({status: "error", message: "User already exists"})
         }
 
         // Hash password
@@ -32,9 +36,16 @@ router.post("/signup", async (req, res) => {
             },
         });
 
+        // Create a JWT token
+        const token = jwt.sign(
+            {userId: user.id, email: user.email},
+            process.env.JWT_SECRET,
+            {expiresIn: "1d"}
+        )
+
         // Don't send user.password
         delete user.password;
-        res.status(201).json({status: "success", message: "User registered successfully", data: {user}})
+        res.status(201).json({status: "success", message: "User registered successfully", data: {token, user}})
 
     }catch(err){
         res.status(500).json({status: "error", message: "Registration failed", error: err.message})
@@ -70,7 +81,7 @@ router.post("/login", async (req, res) => {
 
         // Don't send the password back
         delete user.password;
-        res.status(200).json({status: "success", message: "Login successful", data: {user, token}})
+        res.status(200).json({status: "success", message: "Login successful", data: {token, user}})
     }catch(err){
             res.status(500).json({status: "error", message: "Login failed", error: err.message})
     }
