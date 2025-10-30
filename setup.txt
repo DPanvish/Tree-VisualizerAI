@@ -65,4 +65,5 @@
     Run docker-compose down to stop it later
 15) open your server/.env file and set your DATABASE_URL
     DATABASE_URL="postgresql://(USER):(PASSWORD)@(HOST):(PORT)/(DATABASE)?schema=public"
-16) you can run the Prisma migration to create your tables "npx prisma migrate dev --name init"
+16) you can run the Prisma migration to create your tables "npx dotenv -- npx prisma migrate dev --name init"
+17) Run this command to generate prisma client "npx dotenv -- npx prisma generate"
