@@ -4,6 +4,8 @@ import TreeEditorPage from "./pages/TreeEditorPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
+import {ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
     return (
@@ -21,6 +23,19 @@ const App = () => {
                 <Route path="/login" element={<LoginPage />} />
                 {/* We can add a ProtectedRoute wrapper around TreeEditorPage Later */}
             </Routes>
+
+            <ToastContainer
+                position="top-center"
+                autoClose={4000}
+                hideProgressBar={true}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
         </div>
     )
 }

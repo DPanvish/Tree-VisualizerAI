@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 // Redux Imports
 import {useDispatch} from "react-redux";
@@ -13,11 +14,9 @@ const SignupPage = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
 
     const handleSubmit = async(e) => {
         e.preventDefault();
-        setError(null);
 
         try{
             const response = await axios.post("http://localhost:5000/api/auth/signup", {
@@ -27,6 +26,7 @@ const SignupPage = () => {
             });
 
             if(response.data.status === "success"){
+                toast.success("Account created successfully!");
                 const {user, token} = response.data.data;
                 dispatch(setCredentials({user, token}));
                 localStorage.setItem("userToken", token);
@@ -37,7 +37,7 @@ const SignupPage = () => {
             const message = err.response?.data?.message || "Registration failed";
             console.log(err);
             console.error("Registration error:", message);
-            setError(message);
+            toast.error(message)
         }
     };
 
@@ -102,10 +102,6 @@ const SignupPage = () => {
                             required
                         />
                     </div>
-
-                    {error && (
-                        <p className="text-sm text-red-500 text-center">{error}</p>
-                    )}
 
                     <button
                         type="submit"
