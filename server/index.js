@@ -3,6 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 
+import authRoutes from './routes/auth.js';
+
 const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -15,6 +17,7 @@ app.use(express.json());
 app.get('/', (req, res) => {
     res.send('Hello from the TreeView AI Backend!');
 });
+app.use('/api/auth', authRoutes);
 
 // --- Start the Server ---
 app.listen(PORT, () => {
