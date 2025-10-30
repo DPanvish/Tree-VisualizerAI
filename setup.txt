@@ -25,3 +25,44 @@
         "dev": "nodemon index.js"
     }
 12) Initialize Prisma "npx prisma init"
+13) Create a docker-compose.yml file inside of the root directory
+    /your-project-root
+    ├── client/
+    ├── server/
+    └── docker-compose.yml
+
+    Copy and paste this code into your docker-compose.yml file
+    version: '3.8'
+
+    services:
+      # This is the name of our service
+      postgres-db:
+        # We are using the official postgres image
+        image: postgres:15
+
+        # This gives your running container a friendly name
+        container_name: treeview_postgres
+
+        # These are the credentials your database will be created with
+        environment:
+          POSTGRES_USER: (User)
+          POSTGRES_PASSWORD: (Password)
+          POSTGRES_DB: treeview_db
+
+        # This connects your computer's port 5432 to the container's port 5432
+        ports:
+          - "5432:5432"
+
+        # This is very important: It saves your database data
+        # in a folder named 'pgdata' on your computer.
+        # This way, your data is safe even if you stop the container.
+        volumes:
+          - ./pgdata:/var/lib/postgresql/data
+
+    volumes:
+      pgdata:
+14) Start your database "docker-compose up -d"
+    Run docker-compose down to stop it later
+15) open your server/.env file and set your DATABASE_URL
+    DATABASE_URL="postgresql://(USER):(PASSWORD)@(HOST):(PORT)/(DATABASE)?schema=public"
+16) you can run the Prisma migration to create your tables "npx prisma migrate dev --name init"
