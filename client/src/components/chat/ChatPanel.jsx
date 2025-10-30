@@ -1,17 +1,28 @@
-import React, {useState} from 'react'
+import React, {useRef, useState} from 'react'
 import {PaperAirplaneIcon, XMarkIcon} from "@heroicons/react/24/outline/index.js";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 // Redux Imports
 import { useSelector, useDispatch } from 'react-redux';
 import { addMessage } from "../../redux/slice/chatSlice.js";
+import { setTreeState } from "../../redux/slice/treeSlice.js";
 
 const ChatPanel = ({isOpen, onClose}) => {
     const dispatch = useDispatch();
 
     // State from Redux
-    const { messages } = useSelector((state) => state.chat);
+    const {messages} = useSelector((state) => state.chat);
+    const {nodes, edges} = useSelector((state) => state.tree);
+    const {token} = useSelector((state) => state.auth);
 
     const [input, setInput] = useState("");
+
+    // Auto scroll to bottom
+    const messageEndRef = useRef(null);
+    const scrollToBottom = () => {
+        messageEndRef.current?.scrollIntoView({behavior: "smooth"});
+    }
 
     // Dispatch handlers
     const handleSend = () => {
@@ -21,17 +32,40 @@ const ChatPanel = ({isOpen, onClose}) => {
 
         // Create new message object
         const userMessage = {
-            id: Date.now(),
+            id: `user_${Date.now()}`,
             role: "user",
             content: input.trim(),
         };
 
         // Dispatch the user's message to the Redux store
         dispatch(addMessage(userMessage));
-
-        // Later we'll add API calls
-
         setInput("");
+
+        try{
+            const body = {
+                message: userMessage.content,
+                treeState: {nodes, edges},
+            }
+
+            const config = {
+                headers: {Authorization: `Bearer ${token}`}
+            };
+
+            const response = axios.post("http://localhost:5000/api/chat", body, config);
+
+            if(response.data.status === "success"){
+                const {aiMessage, newTreeState} = response.data.data;
+
+                dispatch(addMessage(aiMessage));
+
+                if(newTreeState){
+                    dispatch(setTreeState(newTreeState));
+                }
+            }
+        }catch(err){
+            const message = err.response?.data?.message || "Chat request failed";
+            toast.error(message);
+        }
     }
 
     return (
@@ -94,6 +128,7 @@ const ChatPanel = ({isOpen, onClose}) => {
                             </div>
                         </div>
                     ))}
+                    <div ref={messageEndRef} />
                 </div>
 
                 {/* Chat Input */}

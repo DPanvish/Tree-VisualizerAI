@@ -69,4 +69,12 @@
 17) Run this command to generate prisma client "npx dotenv -- npx prisma generate"
 
 Extra:
+client side
 React Toaster "npm install react-toastify"
+
+18) Now for AI calls we are using Gemini so install Google AI SDK "npm install @google/generative-ai"
+    Go to Google AI Studio
+    Log in and select "Get API key"
+    Create a new API key for this project
+    Copy the key
+    Add the key to your .env

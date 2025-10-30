@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 
 import authRoutes from './routes/auth.js';
 import sessionRoutes from './routes/sessions.js';
+import chatRoutes from './routes/chat.js';
 
 const prisma = new PrismaClient();
 const app = express();
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 });
 app.use('/api/auth', authRoutes);
 app.use("/api/sessions", sessionRoutes);
+app.use("/api/chat", chatRoutes);
 
 // --- Start the Server ---
 app.listen(PORT, () => {
