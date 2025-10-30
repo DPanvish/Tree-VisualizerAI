@@ -13,11 +13,11 @@ const Navbar = () => {
     const {theme, toggleTheme, toggleSidebar} = useTheme();
 
     return (
-        <nav className="w-full h-16 bg-dark-800 border-b border-dark-700 flex items-center justify-between px-6 shrink-0">
+        <nav className="w-full h-16 bg-bg-secondary border-b border-border-accent flex items-center justify-between px-6 shrink-0">
             <div className="flex items-center space-x-3">
                 <button
                     onClick={toggleSidebar}
-                    className="md:hidden text-muted hover:text-light transition-colors"
+                    className="md:hidden text-muted hover:text-text-primary transition-colors"
                 >
                     <Bars3Icon className="w-6 h-6" />
                 </button>
@@ -25,7 +25,7 @@ const Navbar = () => {
                 {/* Add Logo */}
                 {/*<img src={} alt="Logo" className="w-8 h-8" />*/}
 
-                <span className="text-xl font-bold text-light">TreeVisualizer AI</span>
+                <span className="text-xl font-bold text-text-primary">TreeVisualizer AI</span>
             </div>
 
             {/*  Right Side Controls: Theme Toggle & User Profile  */}
@@ -33,7 +33,7 @@ const Navbar = () => {
                 {/* Theme Toggle Button */}
                 <button
                     onClick={toggleTheme}
-                    className="text-muted hover:text-light p-2 rounded-full hover:bg-dark-700 transition-colors"
+                    className="text-text-secondary hover:text-text-primary p-2 rounded-full hover:bg-bg-primary transition-colors"
                 >
                     {theme === "light" ? (
                         <MoonIcon className="w-5 h-5" />
@@ -50,11 +50,11 @@ const Navbar = () => {
                         alt="User Profile"
                     />
                     <div className="hidden md:flex flex-col text-right">
-                        <span className="text-sm font-medium text-light">User Name</span>
-                        <span className="text-xs text-muted">user@gmail.com</span>
+                        <span className="text-sm font-medium text-text-primary">User Name</span>
+                        <span className="text-xs text-text-secondary">user@gmail.com</span>
                     </div>
 
-                    <button className="hidden md:flex items-center space-x-2 text-muted hover:text-light transition-colors">
+                    <button className="hidden md:flex items-center space-x-2 text-text-secondary hover:text-text-primary transition-colors">
                         <ArrowLeftOnRectangleIcon className="h-5 w-5" />
                         <span>Logout</span>
                     </button>

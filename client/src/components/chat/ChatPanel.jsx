@@ -43,10 +43,10 @@ const ChatPanel = ({isOpen, onClose}) => {
             ></div>
 
 
-            <aside className={`fixed top-0 right-0 h-full w-80 bg-dark-800 flex flex-col z-40 transform transition-transform ease-in-out duration-300
-            lg:relative lg:translate-x-0 lg:z-auto lg:border-l lg:border-dark-700 ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
+            <aside className={`fixed top-0 right-0 h-full w-80 bg-bg-secondary flex flex-col z-40 transform transition-transform ease-in-out duration-300
+            lg:relative lg:translate-x-0 lg:z-auto lg:border-l lg:border-border-accent ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
                 {/* Chat Header */}
-                <div className="h-16 flex-shrink-0 flex items-center justify-between px-4 border-b border-dark-700">
+                <div className="h-16 flex-shrink-0 flex items-center justify-between px-4 border-b border-border-accent">
                     <h2 className="font-semibold text-light text-lg">AI Assistant</h2>
 
                     {/* Close button for moblie */}
@@ -87,7 +87,7 @@ const ChatPanel = ({isOpen, onClose}) => {
                                 className={`p-3 rounded-lg max-w-xs shadow ${
                                     message.role === "user"
                                         ? "bg-accent text-white"
-                                        : "bg-dark-900 text-light"
+                                        : "bg-bg-primary text-text-primary"
                                 }`}
                             >
                                 <p className="text-sm">{message.content}</p>
@@ -97,12 +97,12 @@ const ChatPanel = ({isOpen, onClose}) => {
                 </div>
 
                 {/* Chat Input */}
-                <div className="p-4 border-t border-dark-700 shrink-0">
+                <div className="p-4 border-t border-border-accent shrink-0">
                     <form className="flex space-x-2" onSubmit={(e) => {e.preventDefault(); handleSend()}}>
                         <input
                             type="text"
                             placeholder="Type a command..."
-                            className="bg-dark-700 text-white p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-accent"
+                            className="bg-bg-primary text-text-primary p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-accent"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleSend()}

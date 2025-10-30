@@ -15,9 +15,9 @@ import { addNode, deleteNode, editNode, resetTree, animateTraversal } from "../.
 const SidebarButton = ({icon: Icon, label, onClick}) => (
     <button
         onClick={onClick}
-        className="flex items-center space-x-3 w-full p-2 rounded-lg text-light hover:bg-dark-900 transition-colors"
+        className="flex items-center space-x-3 w-full p-2 rounded-lg text-text-primary hover:bg-bg-primary transition-colors"
     >
-        <Icon className="w-5 h-5 text-muted" />
+        <Icon className="w-5 h-5 text-text-secondary" />
         <span className="text-sm font-medium">{label}</span>
     </button>
 )
@@ -66,7 +66,7 @@ const LeftSidebar = () => {
     return (
         <aside
             className={`
-                w-64 bg-dark-800 p-4 flex flex-col space-y-6 border-r border-dark-700 overflow-y-auto
+                w-64 bg-bg-secondary p-4 flex flex-col space-y-6 border-r border-border-accent overflow-y-auto
                 absolute top-16 bottom-0 md:static md:top-auto md:bottom-auto md:h-full z-10 
                 transition-transform duration-300 ease-in-out
                 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
@@ -75,7 +75,7 @@ const LeftSidebar = () => {
         >
             {/* Section 1: Controls */}
             <div>
-                <h3 className="px-2 text-xs font-semibold text-muted uppercase tracking-wider mb-2">
+                <h3 className="px-2 text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">
                     Controls
                 </h3>
 
@@ -88,7 +88,7 @@ const LeftSidebar = () => {
 
             {/* Section 2: Traversal Animations */}
             <div>
-                <h3 className="px-2 text-xs font-semibold text-muted uppercase tracking-wider mb-2">
+                <h3 className="px-2 text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">
                     Traversal Animations
                 </h3>
                 <div className="flex flex-col space-y-1">

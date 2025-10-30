@@ -64,9 +64,11 @@ const TreeVisualizer = () => {
             const isHighlighted = node.id === highlightedNodeId;
 
             let style = {
-                border: "1px solid var(--color-dark-700)",
+                border: "1px solid var(--color-border-accent)",
+                backgroundColor: "var(--color-text-primary)",
+                color: "var(--color-bg-primary)",
                 boxShadow: "none",
-                transition: "all 0.3s eas,e"
+                transition: "all 0.3s ease"
             };
 
             if(isSelected){
@@ -77,7 +79,7 @@ const TreeVisualizer = () => {
             if(isHighlighted){
                 style.border = "2px solid var(--color-highlight)";
                 style.backgroundColor = "var(--color-highlight)";
-                style.color = "#FFFFFF";
+                style.color = "var(--color-highlight-text)";
                 style.boxShadow = "0 0 15 var(--color-highlight)";
             }
 
@@ -107,13 +109,13 @@ const TreeVisualizer = () => {
                     variant="dots"
                     gap={16}
                     size={1}
-                    className="bg-dark-900"
+                    className="bg-bg-primary"
                     color="#374151"
                 />
 
                 <Controls
                     style={controlStyles}
-                    buttonClassName="[&>svg]:fill-text-muted hover:!bg-dark-900"
+                    buttonClassName="[&>svg]:fill-[var(--color-text-secondary)] hover:!bg-[var(--color-bg-primary)]"
                 />
             </ReactFlow>
         </div>

@@ -6,7 +6,7 @@ import SignupPage from "./pages/SignupPage.jsx";
 
 const App = () => {
     return (
-        <div className="h-screen w-screen bg-dark-900">
+        <div className="h-screen w-screen bg-bg-primary">
             <Routes>
                 <Route path="/" element={<TreeEditorPage />} />
                 <Route path="/signup" element={<SignupPage />} />

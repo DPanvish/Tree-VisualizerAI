@@ -1,16 +1,16 @@
 import React, {useState} from 'react'
 import Navbar from "../components/layout/Navbar.jsx";
 import LeftSidebar from "../components/layout/LeftSidebar.jsx";
-import TreeVisualizer from "../components/tree/TreeVisualizer.jsx";
 import ChatPanel from "../components/chat/ChatPanel.jsx";
 import {ChatBubbleLeftRightIcon} from "@heroicons/react/24/outline/index.js";
+import TreeVisualizer from "../components/tree/TreeVisualizer.jsx";
 
 const TreeEditorPage = () => {
     const [isChatOpen, setIsChatOpen] = useState(false);
 
 
     return (
-        <div className="flex flex-col h-full w-full text-light bg-dark-900">
+        <div className="flex flex-col h-full w-full text-text-primary bg-bg-primary">
             <Navbar />
 
             <div className="flex flex-1 overflow-hidden">
