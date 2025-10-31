@@ -30,6 +30,44 @@ This project uses a modern, full-stack JavaScript and AI toolset.
 | **Authentication** | JWT (jsonwebtoken), bcrypt.js |
 | **Deployment** | Docker, Docker Compose, AWS EC2 |
 
+## 📂 File Structure
+
+The project is organized into a monorepo structure with a `client` and `server` directory.
+```
+.
+├── client/                  # Frontend React Application (Vite)
+│   ├── src/
+│   │   ├── assets/          # Static assets (images, icons)
+│   │   ├── components/      # Reusable React components
+│   │   │   ├── chat/        # ChatPanel and related components
+│   │   │   ├── common/      # Shared components (Modals, Protected Route)
+│   │   │   ├── layout/      # Structural components (Navbar, LeftSidebar)
+│   │   │   └── tree/        # The core TreeVisualizer component
+│   │   ├── context/         # React Context (ThemeContext)
+│   │   ├── pages/           # Top-level page components
+│   │   ├── redux/           # Redux Toolkit state management
+│   │   │   ├── slice/       # Individual state slices (auth, chat, tree)
+│   │   │   └── store.js     # Redux store configuration
+│   │   ├── App.jsx          # Main component with routing
+│   │   └── main.jsx         # Application entry point
+│   └── Dockerfile           # Builds the client Nginx image
+│
+├── server/                  # Backend Node.js Application (Express)
+│   ├── controllers/         # Business logic for API endpoints
+│   ├── lib/                 # Shared library code (e.g., db.js)
+│   ├── middleware/          # Express middleware (e.g., auth)
+│   ├── prisma/              # Prisma ORM configuration
+│   │   ├── migrations/      # Auto-generated SQL migrations
+│   │   └── schema.prisma    # Database schema definition
+│   ├── routes/              # API route definitions
+│   ├── index.js             # Server entry point
+│   └── Dockerfile           # Builds the server Node.js image
+│
+├── .env                     # Environment variables for Docker Compose
+├── docker-compose.yml       # Orchestrates all services (client, server, db)
+└── README.md                # Project documentation
+```
+
 ## 📸 Screenshots & Examples
 
 Here are examples of the application in use, demonstrating its functionality and design.
