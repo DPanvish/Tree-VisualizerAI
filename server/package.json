@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
-    "text": "jest"
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -23,11 +22,6 @@
     "prisma": "^6.18.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.28.5",
-    "babel-jest": "^30.2.0",
-    "jest": "^30.2.0",
-    "jest-mock-extended": "^4.0.0",
-    "nodemon": "^3.1.10",
-    "supertest": "^7.1.4"
+    "nodemon": "^3.1.10"
   }
 }

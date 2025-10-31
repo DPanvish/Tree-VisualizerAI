@@ -1,15 +1,11 @@
-// Importing necessary libraries and components
 import React, {createContext, useContext, useEffect, useState} from 'react'
 
-// Creating a context for the theme
 const ThemeContext = createContext();
 
-// Custom hook to use the theme context
 export const useTheme = () => useContext(ThemeContext);
 
-// ThemeProvider component to provide the theme to the application
+
 export const ThemeProvider = ({children}) => {
-    // State for the theme and sidebar visibility
     const [theme, setTheme] = useState("dark");
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -37,7 +33,6 @@ export const ThemeProvider = ({children}) => {
         setIsSidebarOpen((prev) => !prev);
     }
 
-    // Value to be provided by the context
     const value ={
         theme,
         toggleTheme,

@@ -1,7 +1,6 @@
-// Importing necessary libraries and components
 import {createSlice} from "@reduxjs/toolkit";
 
-// Initial messages for the chat
+
 const initialMessages = [
     {
         id: 1,
@@ -10,17 +9,14 @@ const initialMessages = [
     },
 ];
 
-// Initial state for the chat slice
 const initialState = {
     messages: initialMessages,
 };
 
-// Creating the chat slice
 const chatSlice = createSlice({
     name: "chat",
     initialState,
     reducers: {
-        // Action to set the messages
         setMessages(state, action){
             state.messages = action.payload;
         },
@@ -36,7 +32,5 @@ const chatSlice = createSlice({
     },
 });
 
-// Exporting the actions
 export const {addMessage, clearMessages, setMessages } = chatSlice.actions;
-// Exporting the reducer
 export default chatSlice.reducer;
