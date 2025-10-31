@@ -1,0 +1,8 @@
+# Exclude local dependencies
+node_modules
+
+# Exclude environment variables
+.env
+
+# Exclude nodemon cache (if any)
+.nodemon.json

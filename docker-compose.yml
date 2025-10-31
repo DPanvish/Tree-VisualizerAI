@@ -1,29 +1,51 @@
-version: '3.8'
-
+# The 'version' line has been removed
 services:
-  # This is the name of our service
+  # --- 1. PostgreSQL Database Service ---
   postgres-db:
-    # We are using the official postgres image
     image: postgres:15
-
-    # This gives your running container a friendly name
     container_name: treeview_postgres
-
-    # These are the credentials your database will be created with
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: treeview_db
-
-    # This connects your computer's port 5432 to the container's port 5432
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
-
-    # This is very important: It saves your database data
-    # in a folder named 'pgdata' on your computer.
-    # This way, your data is safe even if you stop the container.
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+    # --- ADD THIS HEALTHCHECK ---
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # --- END OF HEALTHCHECK ---
+
+  # --- 2. Backend Server Service ---
+  server:
+    build:
+      context: ./server
+    container_name: treeview_server
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-db:5432/${POSTGRES_DB}"
+      JWT_SECRET: ${JWT_SECRET}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+    # --- UPDATE depends_on TO USE THE HEALTHCHECK ---
+    depends_on:
+      postgres-db:
+        condition: service_healthy # Wait for the healthcheck to pass
+    # --- END OF UPDATE ---
+
+  # --- 3. Frontend Client Service ---
+  client:
+    build:
+      context: ./client
+    container_name: treeview_client
+    ports:
+      - "80:80"
+    depends_on:
+      - server
 
 volumes:
   pgdata:

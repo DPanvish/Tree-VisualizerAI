@@ -1,5 +1,6 @@
 import React, {useCallback, useMemo} from 'react'
-import ReactFlow, {Background, Controls, addEdge as rfAddEdge} from "reactflow";
+import ReactFlow, {Background, Controls } from "reactflow";
+import { toast } from "react-toastify";
 import "reactflow/dist/style.css";
 
 // Redux Imports
@@ -36,6 +37,28 @@ const TreeVisualizer = () => {
         [dispatch],
     );
 
+    // This function validates a new connection before it's made
+    const isValidConnection = useCallback(
+        (connection) => {
+            // Count existing outgoing edges from the source node
+            const outgoingEdges = edges.filter((edge) => edge.source === connection.source).length;
+
+            // A node cannot connect to itself
+            if(connection.source === connection.target){
+                return false;
+            }
+
+            // A node can have maximum of two children
+            if(outgoingEdges >= 2){
+                return false;
+            }
+
+            return true;
+        },
+        [edges],
+    );
+
+
 
     // This runs when a user manually connects two nodes
     const onConnect = useCallback(
@@ -63,12 +86,19 @@ const TreeVisualizer = () => {
             const isSelected = node.id === selectedNodeId;
             const isHighlighted = node.id === highlightedNodeId;
 
+            let label = node.data?.label || node.label || node.id;
+
+            const displayLabel = String(label)
+
             let style = {
                 border: "1px solid var(--color-border-accent)",
                 backgroundColor: "var(--color-text-primary)",
                 color: "var(--color-bg-primary)",
                 boxShadow: "none",
-                transition: "all 0.3s ease"
+                transition: "all 0.3s ease",
+                width: "auto",
+                minWidth: 50,
+                padding: "5px 10px"
             };
 
             if(isSelected){
@@ -85,6 +115,7 @@ const TreeVisualizer = () => {
 
             return {
                 ...node,
+                data: {label: displayLabel},
                 style: {
                     ...node.style,
                     ...style,
@@ -101,6 +132,7 @@ const TreeVisualizer = () => {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
+                isValidConnection={isValidConnection}
                 onSelectionChange={onSelectionChange}
                 proOptions={proOptions}
                 fitView

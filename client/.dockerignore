@@ -1,0 +1,12 @@
+# Exclude local dependencies (these are installed in the container)
+node_modules
+
+# Exclude the local build folder
+dist
+
+# Exclude environment variables
+.env
+
+# Exclude IDE and OS files
+.DS_Store
+.vscode
