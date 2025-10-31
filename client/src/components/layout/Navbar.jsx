@@ -130,10 +130,10 @@ const Navbar = () => {
                     <div className="flex items-center space-x-3">
                         <div className="hidden md:flex flex-col text-right">
                         <span className="text-sm font-medium text-text-primary">
-                            {user ? user.name : "Guest"}
+                            {user.name}
                         </span>
                             <span className="text-xs text-text-secondary">
-                            {user ? user.email : ""}
+                            {user.email}
                         </span>
                         </div>
 

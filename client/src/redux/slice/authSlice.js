@@ -1,17 +1,20 @@
 import {createSlice} from "@reduxjs/toolkit";
 
-const userToken = localStorage.getItem("userToken") || null;
 
 const initialState = {
-    user: null, // Hold user info
-    token: userToken, // Hold JWT
-    isAuthenticated: !!userToken,
+    user: {name: 'Guest', email: ""}, // Hold user info
+    token: null, // Hold JWT
+    isAuthenticated: false,
+    isAuthLoading: true,
 }
 
 const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
+        setAuthLoading(state, action){
+          state.isAuthLoading = action.payload;
+        },
         // Action to set user/token on successful login/signup
         setCredentials(state, action){
             const {user, token} = action.payload;
@@ -23,14 +26,15 @@ const authSlice = createSlice({
         },
         // Action to clear user/token on logout
         logOut(state){
-            state.user = null;
+            state.user = {name: 'Guest', email: ""}
             state.token = null;
             state.isAuthenticated = false;
+            state.isAuthLoading = false;
             // remove token from localStorage
             localStorage.removeItem("userToken");
         },
     },
 });
 
-export const {setCredentials, logOut} = authSlice.actions;
+export const {setCredentials, logOut, setAuthLoading} = authSlice.actions;
 export default authSlice.reducer;

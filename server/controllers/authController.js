@@ -1,8 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-
-const prisma = new PrismaClient();
+import prisma from "../lib/db.js";
 
 // Signup route
 export const signup =  async (req, res) => {
@@ -85,3 +84,24 @@ export const login = async (req, res) => {
         res.status(500).json({status: "error", message: "Login failed", error: err.message})
     }
 };
+
+
+// Get user profile route
+export const getProfile = async(req, res) => {
+    try{
+        const userId = req.user.userId;
+
+        const user = await prisma.user.findUnique({
+            where: {id: userId},
+        });
+
+        if(!user){
+            return res.status(404).json({status: "error", message: "User not found"});
+        }
+
+        delete user.password;
+        res.status(200).json({status: "success", message: "User profile retrieved successfully", data: {user}});
+    }catch(err){
+        res.status(500).json({status: "error", message: "Failed to retrieve user profile", error: err.message});
+    }
+}
