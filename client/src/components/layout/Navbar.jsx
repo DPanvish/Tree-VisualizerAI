@@ -59,7 +59,7 @@ const Navbar = () => {
                 }
             };
 
-            const response = await axios.post("http://localhost:5000/api/sessions", sessionData, config);
+            const response = await axios.post("http://16.16.211.73:5000/api/sessions", sessionData, config);
 
             if(response.data.status === "success"){
                 toast.success("Toast Session saved successfully!");

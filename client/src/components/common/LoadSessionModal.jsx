@@ -29,7 +29,7 @@ const LoadSessionModal = ({isOpen, onClose}) => {
                         headers: {Authorization: `Bearer ${token}`}
                     };
 
-                    const response = await axios.get("http://localhost:5000/api/sessions", config);
+                    const response = await axios.get("http://16.16.211.73:5000/api/sessions", config);
                     if(response.data.status === "success"){
                         setSessions(response.data.data.sessions || []);
                     }
@@ -51,7 +51,7 @@ const LoadSessionModal = ({isOpen, onClose}) => {
                 headers: {Authorization: `Bearer ${token}`}
             };
 
-            const response = await axios.get(`http://localhost:5000/api/sessions/${sessionId}`, config);
+            const response = await axios.get(`http://16.16.211.73:5000/api/sessions/${sessionId}`, config);
 
             if(response.data.status === "success"){
                 const {session} = response.data.data;
@@ -87,7 +87,7 @@ const LoadSessionModal = ({isOpen, onClose}) => {
                 headers: {Authorization: `Bearer ${token}`}
             };
 
-            const response = await axios.delete(`http://localhost:5000/api/sessions/${sessionId}`, config);
+            const response = await axios.delete(`http://16.16.211.73:5000/api/sessions/${sessionId}`, config);
 
             if(response.data.status === "success"){
                 toast.success(`Session "${sessionName}" deleted successfully!`);

@@ -69,7 +69,7 @@ const ChatPanel = ({isOpen, onClose}) => {
                 headers: {Authorization: `Bearer ${token}`}
             };
 
-            const response = await axios.post("http://localhost:5000/api/chat", body, config);
+            const response = await axios.post("http://16.16.211.73:5000/api/chat", body, config);
 
             if(response.data.status === "success"){
                 const {aiMessage, newTreeState} = response.data.data;
@@ -95,7 +95,7 @@ const ChatPanel = ({isOpen, onClose}) => {
                 headers: {Authorization: `Bearer ${token}`},
             };
 
-            const response = await axios.get("http://localhost:5000/api/chat/export", config);
+            const response = await axios.get("http://16.16.211.73:5000/api/chat/export", config);
 
             // Create a blob from the response data
             const blob = new Blob([response.data], {type: "text/plain"});
@@ -147,6 +147,7 @@ const ChatPanel = ({isOpen, onClose}) => {
                     <div className="flex items-center space-x-3">
                         <button
                             onClick={handleExportChat}
+                            type="button"
                             className="text-text-secondary hover:text-text-primary transition-colors"
                             title="Export Chat History"
                         >
@@ -155,6 +156,7 @@ const ChatPanel = ({isOpen, onClose}) => {
 
                         <button
                             onClick={handleClearChat}
+                            type="button"
                             className="text-text-secondary hover:text-red-500 transition-colors"
                             title="Clear Chat History"
                         >
@@ -232,7 +234,6 @@ const ChatPanel = ({isOpen, onClose}) => {
                             disabled={isLoading}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && handleSend()}
                         />
 
                         <button

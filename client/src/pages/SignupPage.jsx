@@ -22,7 +22,7 @@ const SignupPage = () => {
         e.preventDefault();
 
         try{
-            const response = await axios.post("http://localhost:5000/api/auth/signup", {
+            const response = await axios.post("http://16.16.211.73:5000/api/auth/signup", {
                 name,
                 email,
                 password

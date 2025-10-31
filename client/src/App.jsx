@@ -28,14 +28,14 @@ const App = () => {
                         headers: {Authorization: `Bearer ${userToken}`}
                     };
 
-                    const response = await axios.get("http://localhost:5000/api/auth/profile", config);
+                    const response = await axios.get("http://16.16.211.73:5000/api/auth/profile", config);
 
                     if(response.data.status === "success"){
                         const user = response.data.data.user;
                         dispatch(setCredentials({user, token: userToken}));
 
                         // Fetch latest session for this user
-                        const sessionResponse = await axios.get("http://localhost:5000/api/sessions/latest", config);
+                        const sessionResponse = await axios.get("http://16.16.211.73:5000/api/sessions/latest", config);
                         if(sessionResponse.data.status === "success"){
                             const { session } = sessionResponse.data.data;
 
