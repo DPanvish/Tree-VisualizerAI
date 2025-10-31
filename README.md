@@ -34,12 +34,12 @@ This project uses a modern, full-stack JavaScript and AI toolset.
 
 Here are examples of the application in use, demonstrating its functionality and design.
 
-| Login Page | Main App (Dark Mode) |
-| :---: | :---: |
-| *[Login Page](./.github/assets/login-page.png)* | *[Main App - Dark Mode](./.github/assets/app-dark.png)* |
-| **AI Operation** | **Load Session Modal** |
-| :---: | :---: |
-| *[AI Operation](./.github/assets/ai-operation.png)* | *[Load Session Modal](./.github/assets/load-modal.png)* |
+|             Login Page              |       Main App (Dark Mode)        |
+|:-----------------------------------:|:---------------------------------:|
+| ![Login Page](./.github/assets/login-page.png) | ![Main App Dark Mode](./.github/assets/app-dark.png) |
+|          **AI Operation**           |      **Load Session Modal**       |
+|                :---:                |               :---:               |
+| ![AI Operation](./.github/assets/ai-operation.png) | ![Load Session Modal](./.github/assets/load-modal.png) |
 
 ## ⚙️ Development Process
 
