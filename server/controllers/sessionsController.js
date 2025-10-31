@@ -18,7 +18,7 @@ export const getAllSessions = async (req, res) => {
             }
         });
 
-        res.status(200).json({status: "success", message: "Sessions retrieved successfully", data: sessions});
+        res.status(200).json({status: "success", message: "Sessions retrieved successfully", data: {sessions}});
     }catch(err){
         res.status(500).json({status: "error", message: "Failed to retrieve sessions", error: err.message});
     }
@@ -41,7 +41,7 @@ export const getSessionById = async (req, res) => {
             return res.status(404).json({status: "error", message: "Session not found or not owned by the user"});
         }
 
-        res.status(200).json({status: "success", message: "Session retrieved successfully", data: session});
+        res.status(200).json({status: "success", message: "Session retrieved successfully", data: {session}});
     }catch(err){
         res.status(500).json({status: "error", message: "Failed to retrieve session", error: err.message});
     }
@@ -70,7 +70,7 @@ export const saveNewSession = async (req, res) => {
             },
         });
 
-        res.status(201).json({status: "success", message: "Session saved successfully", data: newSession});
+        res.status(201).json({status: "success", message: "Session saved successfully", data: {newSession}});
     }catch(err){
         res.status(500).json({status: "error", message: "Failed to save session", error: err.message});
     }
@@ -120,7 +120,7 @@ export const getLatestSession = async(req, res) => {
             return res.status(200).json({status: "info", message: "No sessions found", data: null});
         }
 
-        res.status(200).json({status: "success", message: "Latest session retrieved successfully", data: latestSession});
+        res.status(200).json({status: "success", message: "Latest session retrieved successfully", data: {latestSession}});
     }catch(err){
         res.status(500).json({status: "error", message: "Failed to retrieve latest session", error: err.message});
     }
