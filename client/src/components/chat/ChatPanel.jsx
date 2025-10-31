@@ -1,3 +1,4 @@
+// Importing necessary libraries and components
 import React, { useRef, useState, useEffect } from 'react'
 import {ArrowDownOnSquareIcon, PaperAirplaneIcon, TrashIcon, XMarkIcon} from "@heroicons/react/24/outline/index.js";
 import axios from "axios";
@@ -10,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addMessage, clearMessages } from "../../redux/slice/chatSlice.js";
 import { setTreeState } from "../../redux/slice/treeSlice.js";
 
+// Formats an ISO timestamp into a more readable time string (e.g., "10:30 AM").
 const formatTimestamp = (isoString) => {
     if (!isoString) return '';
     return new Date(isoString).toLocaleTimeString([], {
@@ -18,18 +20,20 @@ const formatTimestamp = (isoString) => {
     });
 };
 
+// The main component for the AI assistant chat panel.
 const ChatPanel = ({isOpen, onClose}) => {
     const dispatch = useDispatch();
 
-    // State from Redux
+    // --- Redux State ---
     const {messages} = useSelector((state) => state.chat);
     const {nodes, edges} = useSelector((state) => state.tree);
     const {token} = useSelector((state) => state.auth);
 
-    const [input, setInput] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    // --- Component State ---
+    const [input, setInput] = useState(""); // Current user input
+    const [isLoading, setIsLoading] = useState(false); // True when waiting for AI response
 
-    // Auto scroll to bottom
+    // --- Auto-Scrolling Logic ---
     const messageEndRef = useRef(null);
     const scrollToBottom = () => {
         messageEndRef.current?.scrollIntoView({behavior: "smooth"});
@@ -37,17 +41,15 @@ const ChatPanel = ({isOpen, onClose}) => {
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages]);
-    
+    }, [messages]); // Scroll whenever new messages are added
 
-    // Dispatch handlers
+    // --- Event Handlers ---
+
+    // Sends the user's message to the backend and handles the AI's response.
     const handleSend = async() => {
-        if(input.trim() === ""){
-            return;
-        }
+        if(input.trim() === "") return;
 
         setIsLoading(true);
-        // Create new message object
         const userMessage = {
             id: `user_${Date.now()}`,
             role: "user",
@@ -55,30 +57,22 @@ const ChatPanel = ({isOpen, onClose}) => {
             timestamp: new Date().toISOString(),
         };
 
-        // Dispatch the user's message to the Redux store
         dispatch(addMessage(userMessage));
         setInput("");
 
         try{
             const body = {
                 message: userMessage.content,
-                treeState: {nodes, edges},
+                treeState: {nodes, edges}, // Send current tree state for context
             }
-
-            const config = {
-                headers: {Authorization: `Bearer ${token}`}
-            };
+            const config = { headers: {Authorization: `Bearer ${token}`} };
 
             const response = await axios.post("http://localhost:5000/api/chat", body, config);
 
             if(response.data.status === "success"){
                 const {aiMessage, newTreeState} = response.data.data;
-
-                dispatch(addMessage(aiMessage));
-
-                if(newTreeState){
-                    dispatch(setTreeState(newTreeState));
-                }
+                dispatch(addMessage(aiMessage)); // Add AI response to chat
+                if(newTreeState) dispatch(setTreeState(newTreeState)); // Update tree if modified by AI
             }
         }catch(err){
             const message = err.response?.data?.message || "Chat request failed";
@@ -88,30 +82,20 @@ const ChatPanel = ({isOpen, onClose}) => {
         }
     }
 
-    // Export Chat
+    // Exports the current chat history to a text file.
     const handleExportChat = async() => {
         try{
-            const config = {
-                headers: {Authorization: `Bearer ${token}`},
-            };
-
+            const config = { headers: {Authorization: `Bearer ${token}`} };
             const response = await axios.get("http://localhost:5000/api/chat/export", config);
 
-            // Create a blob from the response data
             const blob = new Blob([response.data], {type: "text/plain"});
-
-            // Create alink element to trigger the download
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            const timestamp = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+            const timestamp = new Date().toISOString().split("T")[0];
             link.download = `chat_export_${timestamp}.txt`;
-
-            // Append to the DOM, click it, and then remove it
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-
-            // Clean up the URL object
             URL.revokeObjectURL(link.href);
 
             toast.success("Chat exported successfully!");
@@ -121,7 +105,7 @@ const ChatPanel = ({isOpen, onClose}) => {
         }
     }
 
-    // Handle Clear chat
+    // Clears all messages from the chat panel after confirmation.
     const handleClearChat = () => {
         if(window.confirm("Are you sure you want to clear the current chat? This action cannot be undone.")){
             dispatch(clearMessages());
@@ -131,43 +115,33 @@ const ChatPanel = ({isOpen, onClose}) => {
 
     return (
         <>
+            {/* Overlay for mobile view when chat is open */}
             <div
                 className={`fixed inset-0 bg-black bg-opacity-50 z-30 transition-opacity lg:hidden ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
                 onClick={onClose}
                 aria-hidden="true"
             ></div>
 
-
+            {/* Main chat panel container */}
             <aside className={`fixed top-0 right-0 h-full w-80 bg-bg-secondary flex flex-col z-40 transform transition-transform ease-in-out duration-300
             lg:relative lg:translate-x-0 lg:z-auto lg:border-l lg:border-border-accent ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
                 {/* Chat Header */}
                 <div className="h-16 flex-shrink-0 flex items-center justify-between px-4 border-b border-border-accent gap-4">
                     <h2 className="font-semibold text-text-primary text-lg">AI Assistant</h2>
-
                     <div className="flex items-center space-x-3">
-                        <button
-                            onClick={handleExportChat}
-                            className="text-text-secondary hover:text-text-primary transition-colors"
-                            title="Export Chat History"
-                        >
+                        <button onClick={handleExportChat} className="text-text-secondary hover:text-text-primary transition-colors" title="Export Chat History">
                             <ArrowDownOnSquareIcon className="w-6 h-6" />
                         </button>
-
-                        <button
-                            onClick={handleClearChat}
-                            className="text-text-secondary hover:text-red-500 transition-colors"
-                            title="Clear Chat History"
-                        >
+                        <button onClick={handleClearChat} className="text-text-secondary hover:text-red-500 transition-colors" title="Clear Chat History">
                             <TrashIcon className="w-6 h-6" />
                         </button>
                     </div>
-
-                    {/* Close button for moblie */}
                     <button onClick={onClose} className="text-gray-400 hover:text-white lg:hidden">
                         <XMarkIcon className="w-6 h-6" />
                     </button>
                 </div>
 
+                {/* Message Display Area */}
                 <div className="flex-1 p-4 space-y-4 overflow-y-auto custom-scrollbar">
                     {messages.map((message) => (
                         <div key={message.id}>
@@ -175,32 +149,22 @@ const ChatPanel = ({isOpen, onClose}) => {
                                 // AI Message Layout
                                 <div className="flex items-start space-x-3">
                                     <img src={AIAvatar} alt="AI Assistant" className="w-8 h-8 rounded-full border-2 border-border-accent" />
-
                                     <div className="flex flex-col items-start">
                                         <div className="p-3 rounded-lg max-w-xs shadow bg-bg-primary text-text-primary">
                                             <p className="text-sm break-words">{message.content}</p>
                                         </div>
-
-                                        <span className="text-sm text-text-secondary mt-1 px-2">
-                                            {formatTimestamp(message.timestamp)}
-                                        </span>
+                                        <span className="text-sm text-text-secondary mt-1 px-2">{formatTimestamp(message.timestamp)}</span>
                                     </div>
                                 </div>
                             ) : (
                                 // User Message Layout
                                 <div className="flex items-start justify-end space-x-3">
-
-
                                     <div className="flex flex-col items-end">
                                         <div className="p-3 rounded-lg max-w-xs shadow bg-accent text-white">
                                             <p className="text-sm break-words">{message.content}</p>
                                         </div>
-
-                                        <span className="text-sm text-text-secondary mt-1 px-2">
-                                        {formatTimestamp(message.timestamp)}
-                                    </span>
+                                        <span className="text-sm text-text-secondary mt-1 px-2">{formatTimestamp(message.timestamp)}</span>
                                     </div>
-
                                     <img src={User} alt="User" className="w-8 h-8 rounded-full border-2 border-border-accent" />
                                 </div>
                             )}
@@ -222,7 +186,7 @@ const ChatPanel = ({isOpen, onClose}) => {
                     <div ref={messageEndRef} />
                 </div>
 
-                {/* Chat Input */}
+                {/* Chat Input Area */}
                 <div className="p-4 border-t border-border-accent shrink-0">
                     <form className="flex space-x-2" onSubmit={(e) => {e.preventDefault(); handleSend()}}>
                         <input
@@ -232,14 +196,9 @@ const ChatPanel = ({isOpen, onClose}) => {
                             disabled={isLoading}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                            onKeyDown={(e) => e.key === "Enter" && !isLoading && handleSend()}
                         />
-
-                        <button
-                            type="submit"
-                            className="bg-accent hover:bg-accent-hover text-white p-2 rounded-lg transition-colors flex-shrink-0"
-                            disabled={isLoading}
-                        >
+                        <button type="submit" className="bg-accent hover:bg-accent-hover text-white p-2 rounded-lg transition-colors flex-shrink-0" disabled={isLoading}>
                             <PaperAirplaneIcon className="w-5 h-5" />
                         </button>
                     </form>

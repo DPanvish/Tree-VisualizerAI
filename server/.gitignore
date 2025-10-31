@@ -3,3 +3,10 @@ node_modules
 .env
 
 /generated/prisma
+
+
+ # Test files and directories
+ __tests__/
+
+ # Test coverage reports
+ coverage/

@@ -1,3 +1,4 @@
+// Importing necessary libraries and components
 import React, {useState} from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
@@ -9,32 +10,44 @@ import { useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slice/authSlice.js";
 import {MoonIcon, SunIcon} from "@heroicons/react/24/solid/index.js";
 
+// LoginPage component
 const LoginPage = () => {
+    // Hook for navigation
     const navigate = useNavigate();
+    // Hook for dispatching redux actions
     const dispatch = useDispatch();
+    // Hook for using theme context
     const { theme, toggleTheme } = useTheme();
 
+    // State for email and password
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    // Function to handle form submission
     const handleSubmit = async(e) => {
         e.preventDefault();
 
         try{
+            // Sending a POST request to the login endpoint
             const response = await axios.post("http://localhost:5000/api/auth/login", {
                 email,
                 password
             });
 
+            // If login is successful
             if(response.data.status === "success"){
                 toast.success("Login successful!");
                 const {user, token} = response.data.data;
+                // Dispatching the setCredentials action
                 dispatch(setCredentials({user, token}));
+                // Storing the token in local storage
                 localStorage.setItem("userToken", token);
                 console.log("Login successful");
+                // Navigating to the home page
                 navigate("/");
             }
         }catch(err){
+            // Handling login errors
             const message = err.response?.data?.message || "Login failed";
             console.error("Login error:", message);
             toast.error(message);
@@ -59,6 +72,7 @@ const LoginPage = () => {
             </div>
             <div className="bg-bg-secondary p-8 rounded-lg shadow-xl w-full max-w-sm">
                 <h2 className="text-2xl font-bold text-text-primary text-center mb-6">Login</h2>
+                {/* Login form */}
                 <form className="space-y-4" onSubmit={handleSubmit}>
                     <div>
                         <label
@@ -96,6 +110,7 @@ const LoginPage = () => {
                         />
                     </div>
 
+                    {/* Submit button */}
                     <button
                         type="submit"
                         className="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2 px-4 rounded-lg transition-colors"
@@ -106,6 +121,7 @@ const LoginPage = () => {
                 </form>
                 <p className="text-sm text-text-secondary text-center mt-4">
                     Don't have an account?{" "}
+                    {/* Link to signup page */}
                     <span onClick={() => navigate("/signup")} className="text-accent hover:underline">Sign up</span>
                 </p>
             </div>

@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
+// Importing necessary libraries and components
+import React, { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import TreeEditorPage from "./pages/TreeEditorPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
@@ -11,60 +12,62 @@ import axios from "axios";
 // Redux imports
 import { setTreeState } from "./redux/slice/treeSlice.js";
 import { setMessages } from "./redux/slice/chatSlice.js";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setCredentials, setAuthLoading, logOut } from "./redux/slice/authSlice.js";
 
+// The main application component that sets up routing and handles initial auth state.
 const App = () => {
     const dispatch = useDispatch();
 
+    // This effect runs on initial application load to check for an existing user session.
     useEffect(() => {
         const userToken = localStorage.getItem("userToken");
 
-        // Check if the token is valid and fetch user profile if needed
-        if(userToken){
-            const fetchUserProfile = async() => {
-                try{
-                    const config ={
-                        headers: {Authorization: `Bearer ${userToken}`}
-                    };
+        if (userToken) {
+            const fetchUserProfile = async () => {
+                try {
+                    const config = { headers: { Authorization: `Bearer ${userToken}` } };
 
-                    const response = await axios.get("http://localhost:5000/api/auth/profile", config);
+                    // Verify token and fetch user profile.
+                    const profileResponse = await axios.get("http://localhost:5000/api/auth/profile", config);
 
-                    if(response.data.status === "success"){
-                        const user = response.data.data.user;
-                        dispatch(setCredentials({user, token: userToken}));
+                    if (profileResponse.data.status === "success") {
+                        const user = profileResponse.data.data.user;
+                        dispatch(setCredentials({ user, token: userToken }));
 
-                        // Fetch latest session for this user
+                        // Fetch the user's most recent session.
                         const sessionResponse = await axios.get("http://localhost:5000/api/sessions/latest", config);
-                        if(sessionResponse.data.status === "success"){
+                        if (sessionResponse.data.status === "success") {
                             const { session } = sessionResponse.data.data;
-
-                            // Load the tree and chat history from the session
-                            if(session){
-                                dispatch(setTreeState({nodes: session.nodes, edges: session.edges}));
+                            if (session) {
+                                // Load the tree and chat history from the latest session.
+                                dispatch(setTreeState({ nodes: session.nodes, edges: session.edges }));
                                 dispatch(setMessages(session.chatHistory?.messages || []));
                             }
                         }
-                    }else{
+                    } else {
+                        // If token is invalid, log the user out.
                         dispatch(logOut());
                     }
-                }catch(err){
+                } catch (err) {
+                    // On any error (e.g., network, expired token), log out.
                     dispatch(logOut());
-                }finally {
+                } finally {
+                    // Stop the initial loading state.
                     dispatch(setAuthLoading(false));
                 }
             };
 
             fetchUserProfile();
-
-        }else{
+        } else {
+            // If no token is found, just stop the loading state.
             dispatch(setAuthLoading(false));
         }
-
     }, [dispatch]);
 
     return (
         <div className="h-screen w-screen bg-bg-primary">
+            {/* Application-level routing */}
             <Routes>
                 <Route
                     path="/"
@@ -76,9 +79,9 @@ const App = () => {
                 />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/login" element={<LoginPage />} />
-                {/* We can add a ProtectedRoute wrapper around TreeEditorPage Later */}
             </Routes>
 
+            {/* Global toast notification container */}
             <ToastContainer
                 position="top-center"
                 autoClose={4000}
@@ -92,6 +95,7 @@ const App = () => {
                 theme="colored"
             />
         </div>
-    )
-}
-export default App
+    );
+};
+
+export default App;

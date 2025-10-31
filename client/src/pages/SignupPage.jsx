@@ -1,3 +1,4 @@
+// Importing necessary libraries and components
 import React, {useState} from 'react'
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
@@ -9,34 +10,46 @@ import {useDispatch} from "react-redux";
 import {setCredentials} from "../redux/slice/authSlice.js";
 import {MoonIcon, SunIcon} from "@heroicons/react/24/solid/index.js";
 
+// SignupPage component
 const SignupPage = () => {
+    // Hook for navigation
     const navigate = useNavigate();
+    // Hook for dispatching redux actions
     const dispatch = useDispatch();
+    // Hook for using theme context
     const { theme, toggleTheme } = useTheme();
 
+    // State for name, email and password
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    // Function to handle form submission
     const handleSubmit = async(e) => {
         e.preventDefault();
 
         try{
+            // Sending a POST request to the signup endpoint
             const response = await axios.post("http://localhost:5000/api/auth/signup", {
                 name,
                 email,
                 password
             });
 
+            // If signup is successful
             if(response.data.status === "success"){
                 toast.success("Account created successfully!");
                 const {user, token} = response.data.data;
+                // Dispatching the setCredentials action
                 dispatch(setCredentials({user, token}));
+                // Storing the token in local storage
                 localStorage.setItem("userToken", token);
                 console.log("Registration successful");
+                // Navigating to the home page
                 navigate("/");
             }
         }catch(err){
+            // Handling signup errors
             const message = err.response?.data?.message || "Registration failed";
             console.log(err);
             console.error("Registration error:", message);
@@ -65,6 +78,7 @@ const SignupPage = () => {
                     Create Account
                 </h2>
 
+                {/* Signup form */}
                 <form className="space-y-4" onSubmit={handleSubmit}>
                     <div>
                         <label
@@ -120,6 +134,7 @@ const SignupPage = () => {
                         />
                     </div>
 
+                    {/* Submit button */}
                     <button
                         type="submit"
                         className="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2 px-4 rounded-lg transition-colors"
@@ -130,6 +145,7 @@ const SignupPage = () => {
 
                 <p className="text-sm text-text-secondary text-center mt-4">
                     Already have an account?{" "}
+                    {/* Link to login page */}
                     <span onClick={() => navigate("/login")} className="text-accent hover:underline">
                         Login
                     </span>

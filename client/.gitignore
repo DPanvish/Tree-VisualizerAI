@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+ # Test files and directories
+ __tests__/
+ src/test/
+
+ # Test coverage reports
+ coverage/

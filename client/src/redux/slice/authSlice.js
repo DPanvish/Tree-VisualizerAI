@@ -1,6 +1,7 @@
+// Importing necessary libraries and components
 import {createSlice} from "@reduxjs/toolkit";
 
-
+// Initial state for the auth slice
 const initialState = {
     user: {name: 'Guest', email: ""}, // Hold user info
     token: null, // Hold JWT
@@ -8,10 +9,12 @@ const initialState = {
     isAuthLoading: true,
 }
 
+// Creating the auth slice
 const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
+        // Action to set the auth loading state
         setAuthLoading(state, action){
           state.isAuthLoading = action.payload;
         },
@@ -36,5 +39,7 @@ const authSlice = createSlice({
     },
 });
 
+// Exporting the actions
 export const {setCredentials, logOut, setAuthLoading} = authSlice.actions;
+// Exporting the reducer
 export default authSlice.reducer;

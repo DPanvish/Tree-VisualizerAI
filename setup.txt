@@ -78,3 +78,50 @@ React Toaster "npm install react-toastify"
     Create a new API key for this project
     Copy the key
     Add the key to your .env
+
+19) Now for the testing the backend first install "npm install --save-dev jest supertest @babel/preset-env babel-jest jest-mock-extended"
+20) Create a Babel configuration file to allow Jest to work with ES Modules and add the below script
+    {
+      "presets": [
+        ["@babel/preset-env", { "targets": { "node": "current" } }]
+      ]
+    }
+21) add test to the package.json
+    "scripts": {
+         "start": "node index.js",
+         "dev": "nodemon index.js",
+         "test": "jest"
+    },
+22) now write tests for all endpoints like
+
+23) For testing the frontend I am going to use vitest install it using
+    "npm install --save-dev vitest jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event"
+24) Update vite.config.js
+    import { defineConfig } from 'vite'
+    import react from '@vitejs/plugin-react'
+    import tailwindcss from '@tailwindcss/vite'
+
+    // https://vite.dev/config/
+    export default defineConfig({
+      plugins: [
+          react(),
+          tailwindcss({
+              darkMode: "class",
+          }),
+      ],
+      test: {
+          globals: true,
+          environment: 'jsdom',
+          setupFiles: "./src/test/setup.js",
+      }
+    })
+
+27) Update package.json scripts
+    "scripts": {
+         "dev": "vite",
+         "build": "vite build",
+         "lint": "eslint .",
+         "preview": "vite preview",
+         "test": "vitest"
+       },
+26) Write unit tests for components

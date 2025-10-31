@@ -1,22 +1,24 @@
+// Importing necessary libraries and modules
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import prisma from "../lib/db.js";
 
-// Initialize the AI
+// Initialize the Google Generative AI client with the API key from environment variables.
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// System Prompt
-// This is the "brain" of the AI, it decides what it will do based on the input
+// --- System Prompt Definition ---
+// This prompt defines the core behavior and response structure for the AI model.
 const systemPrompt = `
 You are an AI supervisor for a tree data structure visualization app.
-Your job is to analyze the user's message and the current tree state.
-You MUST respond with a JSON object with this exact structure:
+Your primary role is to interpret user requests and the current state of the tree, then respond with a structured JSON object.
+
+**You MUST respond with a JSON object following this exact structure:**
 {
     "intent": "chat | analysis | operation",
-    "aiResponse": "Your text reply to the user.",
-    "newTreeState": {"nodes": [...], "edges": [...]} | null,
+    "aiResponse": "Your text-based reply to the user.",
+    "newTreeState": {"nodes": [...], "edges": [...]} | null
 }
 
-Here are the rules for each intent:
+**Rules for each intent:**
 
 1. **intent: "chat"**
    * Use this if the user is just making small talk (e.g., "Hello", "How are you?", "What's up?").
@@ -34,63 +36,49 @@ Here are the rules for each intent:
    * "newTreeState": You MUST calculate the new nodes and edges arrays based on the user's command and then return the complete new state.
 `;
 
+// Extracts a JSON object from the AI's text response, handling both markdown code blocks and raw JSON.
 const extractJson = (text) => {
-    // First, try to find a markdown code block
     const markdownMatch = text.match(/```json\n([\s\S]*?)\n```/);
     if (markdownMatch && markdownMatch[1]) {
-        // If found, return the content *inside* the block
         return markdownMatch[1];
     }
-
-    // If no markdown block, try to find a raw JSON object
-    // (in case the AI behaves correctly)
     const rawJsonMatch = text.match(/\{[\s\S]*\}/);
     if (rawJsonMatch && rawJsonMatch[0]) {
         return rawJsonMatch[0];
     }
-
-    // If no JSON is found at all
     return null;
 }
 
-export const handleChat = async(req,res) => {
-    try{
-        const {message, treeState} = req.body;
-        const userId = req.user.userId;
+// --- Main Chat Handler ---
+export const handleChat = async (req, res) => {
+    try {
+        const { message, treeState } = req.body;
 
-        // AI Logic
+        // Configure the generative model with the system prompt and JSON response type.
         const model = genAI.getGenerativeModel({
-            model: "gemini-2.5-flash-preview-09-2025",
+            model: "gemini-1.5-flash-latest",
             systemInstruction: systemPrompt,
-            generationConfig: {
-                responseMimeType: "application/json",
-            },
+            generationConfig: { responseMimeType: "application/json" },
         });
 
-        // We send the user's message and their current tree state
+        // Combine the user's message and current tree state into a single prompt.
         const userPrompt = `
         User Message: "${message}"
-        
         Current Tree State: ${JSON.stringify(treeState)}
         `;
 
-        // Call the AI
+        // Generate content using the AI model.
         const result = await model.generateContent(userPrompt);
         const aiResponseText = result.response.text();
 
-        console.log("--- RAW AI RESPONSE ---");
-        console.log(aiResponseText);
-        console.log("-----------------------");
-
+        // Extract and parse the JSON from the AI's response.
         const jsonText = extractJson(aiResponseText);
-
-        if(!jsonText){
-            throw new Error("No JSON found in the AI response");
+        if (!jsonText) {
+            throw new Error("No valid JSON found in the AI response.");
         }
-
-        // Parse the JSON response
         const aiJson = JSON.parse(jsonText);
 
+        // Send the structured response back to the client.
         res.status(200).json({
             status: "success",
             message: "Chat processed successfully",
@@ -103,41 +91,32 @@ export const handleChat = async(req,res) => {
                 },
                 newTreeState: aiJson.newTreeState,
             }
-        })
-    }catch(err){
-        console.error("--- CHAT CONTROLLER CRASH ---:", err);
+        });
+    } catch (err) {
+        console.error("--- CHAT CONTROLLER ERROR ---", err);
         res.status(500).json({
             status: "error",
-            message: "Chat processing failed",
+            message: "An error occurred while processing the chat request.",
             error: err.message,
-        })
+        });
     }
 }
 
-// Export the Chat function
-export const exportChatHistory = async(req, res) => {
-    try{
+// --- Chat History Export Handler ---
+export const exportChatHistory = async (req, res) => {
+    try {
         const userId = req.user.userId;
 
-        // Find all chat histories linked to the sessions owned by the user
+        // Fetch all chat histories associated with the user's sessions.
         const chatHistories = await prisma.chatHistory.findMany({
-            where: {
-                session: {
-                    userId: userId,
-                },
-            },
-            orderBy: {
-                session: {
-                    createdAt: "asc",
-                },
-            },
+            where: { session: { userId: userId } },
+            orderBy: { session: { createdAt: "asc" } },
         });
 
+        // Format the chat history into a single string.
         let formattedChatHistory = "Chat History\n=====================\n\n";
-
         chatHistories.forEach((history) => {
             const messages = history.messages || [];
-
             messages.forEach(message => {
                 const timestamp = new Date(message.timestamp).toLocaleString();
                 const role = message.role === "user" ? "User" : "AI";
@@ -146,10 +125,11 @@ export const exportChatHistory = async(req, res) => {
             formattedChatHistory += "--- End of Session ---\n\n";
         });
 
+        // Set headers for file download and send the formatted history.
         res.setHeader("Content-Type", "text/plain");
         res.setHeader("Content-Disposition", `attachment; filename="chat_history_${userId}.txt"`);
         res.send(formattedChatHistory);
-    }catch(err){
+    } catch (err) {
         console.error("Error exporting chat history:", err);
         res.status(500).json({
             status: "error",
@@ -157,4 +137,4 @@ export const exportChatHistory = async(req, res) => {
             error: err.message,
         });
     }
-}
+};
