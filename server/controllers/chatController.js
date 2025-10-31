@@ -62,9 +62,9 @@ export const handleChat = async(req,res) => {
         const model = genAI.getGenerativeModel({
             model: "gemini-2.5-flash-preview-09-2025",
             systemInstruction: systemPrompt,
-            // generationConfig: {
-            //     responseMimeType: "application/json",
-            // },
+            generationConfig: {
+                responseMimeType: "application/json",
+            },
         });
 
         // We send the user's message and their current tree state

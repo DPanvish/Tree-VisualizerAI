@@ -47,7 +47,7 @@ const LoginPage = () => {
                 {/* Theme Toggle Button */}
                 <button
                     onClick={toggleTheme}
-                    className="absolute top-6 right-100 text-text-secondary hover:text-text-primary p-2 rounded-full hover:bg-bg-secondary transition-colors"
+                    className="absolute top-6 right-6 text-text-secondary hover:text-text-primary p-2 rounded-full hover:bg-bg-secondary transition-colors"
                     aria-label="Toggle Theme"
                 >
                     {theme === "light" ? (
@@ -98,7 +98,6 @@ const LoginPage = () => {
 
                     <button
                         type="submit"
-                        onClick={handleSubmit}
                         className="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2 px-4 rounded-lg transition-colors"
                     >
                         Login

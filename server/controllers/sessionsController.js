@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import prisma from "../lib/db.js";
 
 // Get a list of all saved tree sessions for the logged-in user

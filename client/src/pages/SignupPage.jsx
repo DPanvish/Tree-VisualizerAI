@@ -50,7 +50,7 @@ const SignupPage = () => {
                 {/* Theme Toggle Button */}
                 <button
                     onClick={toggleTheme}
-                    className="absolute top-6 right-100 text-text-secondary hover:text-text-primary p-2 rounded-full hover:bg-bg-secondary transition-colors"
+                    className="absolute top-6 right-6 text-text-secondary hover:text-text-primary p-2 rounded-full hover:bg-bg-secondary transition-colors"
                     aria-label="Toggle Theme"
                 >
                     {theme === "light" ? (
