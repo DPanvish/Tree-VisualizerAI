@@ -27,7 +27,7 @@ const chatSlice = createSlice({
         },
         // Clears the chat messages
         clearMessages(state){
-            state.messages = [];
+            state.messages = initialMessages;
         },
     },
 });

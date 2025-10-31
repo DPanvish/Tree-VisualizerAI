@@ -2,14 +2,17 @@ import React, {useState} from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { toast } from "react-toastify";
+import {useTheme} from "../context/ThemeContext.jsx";
 
 // Redux Imports
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../redux/slice/authSlice.js";
+import {MoonIcon, SunIcon} from "@heroicons/react/24/solid/index.js";
 
 const LoginPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { theme, toggleTheme } = useTheme();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -39,7 +42,21 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="flex items-center justify-center h-full bg-bg-primary">
+        <div className="relative flex items-center justify-center h-full bg-bg-primary">
+            <div className="relative flex items-center justify-center h-full bg-bg-primary">
+                {/* Theme Toggle Button */}
+                <button
+                    onClick={toggleTheme}
+                    className="absolute top-6 right-100 text-text-secondary hover:text-text-primary p-2 rounded-full hover:bg-bg-secondary transition-colors"
+                    aria-label="Toggle Theme"
+                >
+                    {theme === "light" ? (
+                        <MoonIcon className="w-6 h-6" />
+                    ) : (
+                        <SunIcon className="w-6 h-6" />
+                    )}
+                </button>
+            </div>
             <div className="bg-bg-secondary p-8 rounded-lg shadow-xl w-full max-w-sm">
                 <h2 className="text-2xl font-bold text-text-primary text-center mb-6">Login</h2>
                 <form className="space-y-4" onSubmit={handleSubmit}>
@@ -81,6 +98,7 @@ const LoginPage = () => {
 
                     <button
                         type="submit"
+                        onClick={handleSubmit}
                         className="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2 px-4 rounded-lg transition-colors"
                     >
                         Login

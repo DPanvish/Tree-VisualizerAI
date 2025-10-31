@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import prisma from "../lib/db.js";
 
 // Initialize the AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -98,6 +99,7 @@ export const handleChat = async(req,res) => {
                     id: `ai_${Date.now()}`,
                     role: "ai",
                     content: aiJson.aiResponse,
+                    timestamp: new Date().toISOString(),
                 },
                 newTreeState: aiJson.newTreeState,
             }
@@ -109,5 +111,50 @@ export const handleChat = async(req,res) => {
             message: "Chat processing failed",
             error: err.message,
         })
+    }
+}
+
+// Export the Chat function
+export const exportChatHistory = async(req, res) => {
+    try{
+        const userId = req.user.userId;
+
+        // Find all chat histories linked to the sessions owned by the user
+        const chatHistories = await prisma.chatHistory.findMany({
+            where: {
+                session: {
+                    userId: userId,
+                },
+            },
+            orderBy: {
+                session: {
+                    createdAt: "asc",
+                },
+            },
+        });
+
+        let formattedChatHistory = "Chat History\n=====================\n\n";
+
+        chatHistories.forEach((history) => {
+            const messages = history.messages || [];
+
+            messages.forEach(message => {
+                const timestamp = new Date(message.timestamp).toLocaleString();
+                const role = message.role === "user" ? "User" : "AI";
+                formattedChatHistory += `[${timestamp}] ${role}: \n${message.content}\n\n`;
+            });
+            formattedChatHistory += "--- End of Session ---\n\n";
+        });
+
+        res.setHeader("Content-Type", "text/plain");
+        res.setHeader("Content-Disposition", `attachment; filename="chat_history_${userId}.txt"`);
+        res.send(formattedChatHistory);
+    }catch(err){
+        console.error("Error exporting chat history:", err);
+        res.status(500).json({
+            status: "error",
+            message: "Failed to export chat history",
+            error: err.message,
+        });
     }
 }

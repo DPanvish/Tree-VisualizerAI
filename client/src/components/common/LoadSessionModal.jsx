@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import { setTreeState } from "../../redux/slice/treeSlice.js";
 import { addMessage, clearMessages } from "../../redux/slice/chatSlice.js";
+import { TrashIcon} from "@heroicons/react/24/outline/index.js";
 
 const formatDate = (isoString) => {
     return new Date(isoString).toLocaleString("en-US", {
@@ -73,6 +74,31 @@ const LoadSessionModal = ({isOpen, onClose}) => {
         }
     }
 
+    // Delete a session
+    const handleDelete = async(e, sessionId, sessionName) => {
+        e.stopPropagation(); // Prevent closing the modal when clicking the delete button
+
+        if(!window.confirm(`Are you sure you want to delete "${sessionName}"?`)){
+            return;
+        }
+
+        try{
+            const config = {
+                headers: {Authorization: `Bearer ${token}`}
+            };
+
+            const response = await axios.delete(`http://localhost:5000/api/sessions/${sessionId}`, config);
+
+            if(response.data.status === "success"){
+                toast.success(`Session "${sessionName}" deleted successfully!`);
+                // Refresh the list by filtering out the deleted session
+                setSessions(sessions.filter(session => session.id !== sessionId));
+            }
+        }catch(err){
+            toast.error("Failed to delete session");
+        }
+    }
+
     if(!isOpen){
         return null; // Don't render anything if the modal is not open
     }
@@ -89,7 +115,7 @@ const LoadSessionModal = ({isOpen, onClose}) => {
             >
                 <h2 className="text-xl font-semibold text-text-primary mb-4">Load Session</h2>
 
-                <div className="max-h-96 overflow-y-auto space-y-2">
+                <div className="max-h-96 overflow-y-auto space-y-2 custom-scrollbar">
                     {isLoading && <p className="text-text-secondary">Loading...</p>}
 
                     {!isLoading && sessions.length === 0 && (
@@ -108,7 +134,18 @@ const LoadSessionModal = ({isOpen, onClose}) => {
                                     Last updated: {formatDate(session.updatedAt)}
                                 </p>
                             </div>
-                            <span className="text-accent text-sm">Load</span>
+                            <div className="flex items-center space-x-3">
+                                <span className="text-accent text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                                    Load
+                                </span>
+
+                                <button
+                                    onClick={(e) => handleDelete(e, session.id, session.name)}
+                                    className="text-text-secondary hover:text-red-500 transition-colors p1"
+                                >
+                                    <TrashIcon className="w-5 h-5" />
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>

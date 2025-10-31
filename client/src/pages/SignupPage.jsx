@@ -2,14 +2,17 @@ import React, {useState} from 'react'
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import {useTheme} from "../context/ThemeContext.jsx";
 
 // Redux Imports
 import {useDispatch} from "react-redux";
 import {setCredentials} from "../redux/slice/authSlice.js";
+import {MoonIcon, SunIcon} from "@heroicons/react/24/solid/index.js";
 
 const SignupPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { theme, toggleTheme } = useTheme();
 
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -42,7 +45,21 @@ const SignupPage = () => {
     };
 
     return (
-        <div className="flex items-center justify-center h-full bg-bg-primary">
+        <div className="relative flex items-center justify-center h-full bg-bg-primary">
+            <div className="relative flex items-center justify-center h-full bg-bg-primary">
+                {/* Theme Toggle Button */}
+                <button
+                    onClick={toggleTheme}
+                    className="absolute top-6 right-100 text-text-secondary hover:text-text-primary p-2 rounded-full hover:bg-bg-secondary transition-colors"
+                    aria-label="Toggle Theme"
+                >
+                    {theme === "light" ? (
+                        <MoonIcon className="w-6 h-6" />
+                    ) : (
+                        <SunIcon className="w-6 h-6" />
+                    )}
+                </button>
+            </div>
             <div className="bg-bg-secondary p-8 rounded shadow-xl w-full max-w-sm border border-border-accent">
                 <h2 className="text-2xl font-bold text-text-primary text-center mb-6">
                     Create Account

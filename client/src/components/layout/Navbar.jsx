@@ -100,7 +100,7 @@ const Navbar = () => {
                         className="flex items-center space-x-2 bg-accent hover:bg-accent-hover text-white font-medium py-2 px-3 rounded-lg text-sm transition-colors"
                     >
                         <ArrowDownTrayIcon className="w-5 h-5" />
-                        <span>Save Tree</span>
+                        <span className="hidden sm:inline">Save Tree</span>
                     </button>
 
                     <button
@@ -108,7 +108,7 @@ const Navbar = () => {
                         className="flex items-center space-x-2 bg-bg-primary hover:bg-bg-secondary text-text-primary font-medium py-2 px-3 rounded-lg border border-border-accent text-sm transition-colors"
                     >
                         <FolderArrowDownIcon className="w-5 h-5" />
-                        <span>Load Tree</span>
+                        <span className="hidden sm:inline">Load Tree</span>
                     </button>
                 </div>
 

@@ -1,12 +1,22 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { PaperAirplaneIcon, XMarkIcon } from "@heroicons/react/24/outline/index.js";
+import {ArrowDownOnSquareIcon, PaperAirplaneIcon, TrashIcon, XMarkIcon} from "@heroicons/react/24/outline/index.js";
 import axios from "axios";
 import { toast } from "react-toastify";
+import AIAvatar from "../../assets/ai-avatar.png";
+import User from "../../assets/User.png"
 
 // Redux Imports
 import { useSelector, useDispatch } from 'react-redux';
-import { addMessage } from "../../redux/slice/chatSlice.js";
+import { addMessage, clearMessages } from "../../redux/slice/chatSlice.js";
 import { setTreeState } from "../../redux/slice/treeSlice.js";
+
+const formatTimestamp = (isoString) => {
+    if (!isoString) return '';
+    return new Date(isoString).toLocaleTimeString([], {
+        hour: 'numeric',
+        minute: '2-digit',
+    });
+};
 
 const ChatPanel = ({isOpen, onClose}) => {
     const dispatch = useDispatch();
@@ -42,6 +52,7 @@ const ChatPanel = ({isOpen, onClose}) => {
             id: `user_${Date.now()}`,
             role: "user",
             content: input.trim(),
+            timestamp: new Date().toISOString(),
         };
 
         // Dispatch the user's message to the Redux store
@@ -77,6 +88,47 @@ const ChatPanel = ({isOpen, onClose}) => {
         }
     }
 
+    // Export Chat
+    const handleExportChat = async() => {
+        try{
+            const config = {
+                headers: {Authorization: `Bearer ${token}`},
+            };
+
+            const response = await axios.get("http://localhost:5000/api/chat/export", config);
+
+            // Create a blob from the response data
+            const blob = new Blob([response.data], {type: "text/plain"});
+
+            // Create alink element to trigger the download
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            const timestamp = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+            link.download = `chat_export_${timestamp}.txt`;
+
+            // Append to the DOM, click it, and then remove it
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Clean up the URL object
+            URL.revokeObjectURL(link.href);
+
+            toast.success("Chat exported successfully!");
+        }catch(err){
+            const message = err.response?.data?.message || "Chat export failed";
+            toast.error(message);
+        }
+    }
+
+    // Handle Clear chat
+    const handleClearChat = () => {
+        if(window.confirm("Are you sure you want to clear the current chat? This action cannot be undone.")){
+            dispatch(clearMessages());
+            toast.info("Chat cleared successfully!");
+        }
+    }
+
     return (
         <>
             <div
@@ -89,8 +141,26 @@ const ChatPanel = ({isOpen, onClose}) => {
             <aside className={`fixed top-0 right-0 h-full w-80 bg-bg-secondary flex flex-col z-40 transform transition-transform ease-in-out duration-300
             lg:relative lg:translate-x-0 lg:z-auto lg:border-l lg:border-border-accent ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
                 {/* Chat Header */}
-                <div className="h-16 flex-shrink-0 flex items-center justify-between px-4 border-b border-border-accent">
-                    <h2 className="font-semibold text-light text-lg">AI Assistant</h2>
+                <div className="h-16 flex-shrink-0 flex items-center justify-between px-4 border-b border-border-accent gap-4">
+                    <h2 className="font-semibold text-text-primary text-lg">AI Assistant</h2>
+
+                    <div className="flex items-center space-x-3">
+                        <button
+                            onClick={handleExportChat}
+                            className="text-text-secondary hover:text-text-primary transition-colors"
+                            title="Export Chat History"
+                        >
+                            <ArrowDownOnSquareIcon className="w-6 h-6" />
+                        </button>
+
+                        <button
+                            onClick={handleClearChat}
+                            className="text-text-secondary hover:text-red-500 transition-colors"
+                            title="Clear Chat History"
+                        >
+                            <TrashIcon className="w-6 h-6" />
+                        </button>
+                    </div>
 
                     {/* Close button for moblie */}
                     <button onClick={onClose} className="text-gray-400 hover:text-white lg:hidden">
@@ -98,45 +168,57 @@ const ChatPanel = ({isOpen, onClose}) => {
                     </button>
                 </div>
 
-                {/* Chat Messages */}
-                {/*<div className="flex-1 p-4 space-y-4 overflow-y-auto">*/}
-                {/*    /!* Example AI message *!/*/}
-                {/*    <div className="flex">*/}
-                {/*        <div className="bg-dark-900 p-3 rounded-lg max-w-xs shadow">*/}
-                {/*            <p className="text-sm text-light">*/}
-                {/*                Hello! How can I help you build your tree? Try 'create a binary*/}
-                {/*                search tree with nodes 5, 3, 8'.*/}
-                {/*            </p>*/}
-                {/*        </div>*/}
-                {/*    </div>*/}
-
-                {/*    /!* Example User message *!/*/}
-                {/*    <div className="flex justify-end">*/}
-                {/*        <div className="bg-dark-700 p-3 rounded-lg max-w-xs shadow">*/}
-                {/*            <p className="text-sm text-white">*/}
-                {/*                Create a BST with nodes 5, 3, 8*/}
-                {/*            </p>*/}
-                {/*        </div>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
-
-                <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+                <div className="flex-1 p-4 space-y-4 overflow-y-auto custom-scrollbar">
                     {messages.map((message) => (
-                        <div
-                            key={message.id}
-                            className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
-                        >
-                            <div
-                                className={`p-3 rounded-lg max-w-xs shadow ${
-                                    message.role === "user"
-                                        ? "bg-accent text-white"
-                                        : "bg-bg-primary text-text-primary"
-                                }`}
-                            >
-                                <p className="text-sm">{message.content}</p>
-                            </div>
+                        <div key={message.id}>
+                            {message.role === "ai" ? (
+                                // AI Message Layout
+                                <div className="flex items-start space-x-3">
+                                    <img src={AIAvatar} alt="AI Assistant" className="w-8 h-8 rounded-full border-2 border-border-accent" />
+
+                                    <div className="flex flex-col items-start">
+                                        <div className="p-3 rounded-lg max-w-xs shadow bg-bg-primary text-text-primary">
+                                            <p className="text-sm break-words">{message.content}</p>
+                                        </div>
+
+                                        <span className="text-sm text-text-secondary mt-1 px-2">
+                                            {formatTimestamp(message.timestamp)}
+                                        </span>
+                                    </div>
+                                </div>
+                            ) : (
+                                // User Message Layout
+                                <div className="flex items-start justify-end space-x-3">
+
+
+                                    <div className="flex flex-col items-end">
+                                        <div className="p-3 rounded-lg max-w-xs shadow bg-accent text-white">
+                                            <p className="text-sm break-words">{message.content}</p>
+                                        </div>
+
+                                        <span className="text-sm text-text-secondary mt-1 px-2">
+                                        {formatTimestamp(message.timestamp)}
+                                    </span>
+                                    </div>
+
+                                    <img src={User} alt="User" className="w-8 h-8 rounded-full border-2 border-border-accent" />
+                                </div>
+                            )}
                         </div>
                     ))}
+                    {/* Typing Indicator */}
+                    {isLoading && (
+                        <div className="flex items-start space-x-3">
+                            <img src={AIAvatar} alt="AI Assistant" className="w-8 h-8 rounded-full border-2 border-border-accent" />
+                            <div className="p-3 rounded-lg max-w-xs shadow bg-bg-primary text-text-primary">
+                                <div className="flex items-center space-x-1.5">
+                                    <span className="w-2 h-2 bg-text-secondary rounded-full animate-pulse [animation-delay:-0.3s]"></span>
+                                    <span className="w-2 h-2 bg-text-secondary rounded-full animate-pulse [animation-delay:-0.15s]"></span>
+                                    <span className="w-2 h-2 bg-text-secondary rounded-full animate-pulse"></span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     <div ref={messageEndRef} />
                 </div>
 
