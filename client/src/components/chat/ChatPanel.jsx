@@ -36,6 +36,7 @@ const ChatPanel = ({isOpen, onClose}) => {
             return;
         }
 
+        setIsLoading(true);
         // Create new message object
         const userMessage = {
             id: `user_${Date.now()}`,

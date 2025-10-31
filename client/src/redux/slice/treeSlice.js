@@ -10,21 +10,44 @@ const findRootNode = (nodes, edges) => {
 
 // Build an adjacency list from nodes to edges
 const buildAdjacencyList = (nodes, edges) => {
+    const nodeMap = new Map(nodes.map(node => [node.id, node]));
     const adj = new Map();
     nodes.forEach(node => adj.set(node.id, {left: null, right: null, data: node.data.label}));
 
-    // This is a simple login. It assumes first edge is left , second is right
-    edges.forEach(edge => {
-        const parent = adj.get(edge.source);
+    // edges.forEach(edge => {
+    //     const parent = adj.get(edge.source);
+    //
+    //     if (parent) {
+    //         if (!parent.left) {
+    //             parent.left = edge.target;
+    //         } else if (!parent.right) {
+    //             parent.right = edge.target;
+    //         }
+    //     }
+    // });
 
-        if (parent) {
-            if (!parent.left) {
-                parent.left = edge.target;
-            } else if (!parent.right) {
-                parent.right = edge.target;
+    // Group children by parent
+    const childrenMap = new Map();
+    edges.forEach(({source, target}) => {
+        if(!childrenMap.has(source)){
+            childrenMap.set(source, []);
+        }
+        childrenMap.get(source).push(target);
+    });
+
+    // For each parent, determine left and right children based on position
+    childrenMap.forEach((children, parentId) => {
+        if(children.length > 0){
+            const parentNode = nodeMap.get(parentId);
+            if(parentNode){
+                // Sort children by their x-position. The first is left, the second is right
+                children.sort((a, b) => (nodeMap.get(a)?.position.x || 0) - (nodeMap.get(b)?.position.x || 0));
+                const parentInAdj = adj.get(parentId);
+                parentInAdj.left = children[0] || null;
+                parentInAdj.right = children[1] || null;
             }
         }
-    });
+    })
 
     return adj;
 };

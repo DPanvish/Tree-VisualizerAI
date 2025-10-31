@@ -42,7 +42,7 @@ const LoginPage = () => {
         <div className="flex items-center justify-center h-full bg-bg-primary">
             <div className="bg-bg-secondary p-8 rounded-lg shadow-xl w-full max-w-sm">
                 <h2 className="text-2xl font-bold text-text-primary text-center mb-6">Login</h2>
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={handleSubmit}>
                     <div>
                         <label
                             htmlFor="email"
@@ -81,7 +81,6 @@ const LoginPage = () => {
 
                     <button
                         type="submit"
-                        onClick={handleSubmit}
                         className="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2 px-4 rounded-lg transition-colors"
                     >
                         Login
