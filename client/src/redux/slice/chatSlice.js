@@ -17,6 +17,9 @@ const chatSlice = createSlice({
     name: "chat",
     initialState,
     reducers: {
+        setMessages(state, action){
+            state.messages = action.payload;
+        },
         // Adds a new message (from user to AI) to the list
         addMessage(state, action){
             // action.payload should be a new message object {id, role, content}
@@ -29,5 +32,5 @@ const chatSlice = createSlice({
     },
 });
 
-export const {addMessage, clearMessages} = chatSlice.actions;
+export const {addMessage, clearMessages, setMessages } = chatSlice.actions;
 export default chatSlice.reducer;

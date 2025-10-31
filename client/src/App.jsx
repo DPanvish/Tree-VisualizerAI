@@ -9,6 +9,8 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
 // Redux imports
+import { setTreeState } from "./redux/slice/treeSlice.js";
+import { setMessages } from "./redux/slice/chatSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials, setAuthLoading, logOut } from "./redux/slice/authSlice.js";
 
@@ -29,7 +31,20 @@ const App = () => {
                     const response = await axios.get("http://localhost:5000/api/auth/profile", config);
 
                     if(response.data.status === "success"){
-                        dispatch(setCredentials({user: response.data.data.user, token: userToken}));
+                        const user = response.data.data.user;
+                        dispatch(setCredentials({user, token: userToken}));
+
+                        // Fetch latest session for this user
+                        const sessionResponse = await axios.get("http://localhost:5000/api/sessions/latest", config);
+                        if(sessionResponse.data.status === "success"){
+                            const { session } = sessionResponse.data.data;
+
+                            // Load the tree and chat history from the session
+                            if(session){
+                                dispatch(setTreeState({nodes: session.nodes, edges: session.edges}));
+                                dispatch(setMessages(session.chatHistory?.messages || []));
+                            }
+                        }
                     }else{
                         dispatch(logOut());
                     }

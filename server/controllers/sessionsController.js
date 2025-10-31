@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../lib/db.js";
 
 // Get a list of all saved tree sessions for the logged-in user
 export const getAllSessions = async (req, res) => {
@@ -98,5 +97,31 @@ export const deleteSession = async(req, res) => {
         res.status(200).json({status: "success", message: "Session deleted successfully", data: null});
     }catch(err){
         res.status(500).json({status: "error", message: "Failed to delete session", error: err.message});
+    }
+}
+
+
+// get the latest session
+export const getLatestSession = async(req, res) => {
+    try{
+        const userId = req.user.userId;
+
+        const latestSession = await prisma.treeSession.findFirst({
+            where: {userId},
+            orderBy: {
+                updatedAt: "desc",
+            },
+            include: {
+                chatHistory: true,
+            },
+        });
+
+        if(!latestSession){
+            return res.status(200).json({status: "info", message: "No sessions found", data: null});
+        }
+
+        res.status(200).json({status: "success", message: "Latest session retrieved successfully", data: latestSession});
+    }catch(err){
+        res.status(500).json({status: "error", message: "Failed to retrieve latest session", error: err.message});
     }
 }
