@@ -1,7 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 
 
-const initialMessage = [
+const initialMessages = [
     {
         id: 1,
         role: "ai",
@@ -10,7 +10,7 @@ const initialMessage = [
 ];
 
 const initialState = {
-    messages: initialMessage,
+    messages: initialMessages,
 };
 
 const chatSlice = createSlice({

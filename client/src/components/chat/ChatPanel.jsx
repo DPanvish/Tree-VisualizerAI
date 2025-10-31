@@ -1,5 +1,5 @@
-import React, {useRef, useState} from 'react'
-import {PaperAirplaneIcon, XMarkIcon} from "@heroicons/react/24/outline/index.js";
+import React, { useRef, useState, useEffect } from 'react'
+import { PaperAirplaneIcon, XMarkIcon } from "@heroicons/react/24/outline/index.js";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -17,6 +17,7 @@ const ChatPanel = ({isOpen, onClose}) => {
     const {token} = useSelector((state) => state.auth);
 
     const [input, setInput] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     // Auto scroll to bottom
     const messageEndRef = useRef(null);
@@ -24,8 +25,13 @@ const ChatPanel = ({isOpen, onClose}) => {
         messageEndRef.current?.scrollIntoView({behavior: "smooth"});
     }
 
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+    
+
     // Dispatch handlers
-    const handleSend = () => {
+    const handleSend = async() => {
         if(input.trim() === ""){
             return;
         }
@@ -51,7 +57,7 @@ const ChatPanel = ({isOpen, onClose}) => {
                 headers: {Authorization: `Bearer ${token}`}
             };
 
-            const response = axios.post("http://localhost:5000/api/chat", body, config);
+            const response = await axios.post("http://localhost:5000/api/chat", body, config);
 
             if(response.data.status === "success"){
                 const {aiMessage, newTreeState} = response.data.data;
@@ -65,6 +71,8 @@ const ChatPanel = ({isOpen, onClose}) => {
         }catch(err){
             const message = err.response?.data?.message || "Chat request failed";
             toast.error(message);
+        }finally{
+            setIsLoading(false);
         }
     }
 
@@ -138,6 +146,7 @@ const ChatPanel = ({isOpen, onClose}) => {
                             type="text"
                             placeholder="Type a command..."
                             className="bg-bg-primary text-text-primary p-2 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-accent"
+                            disabled={isLoading}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleSend()}
@@ -146,7 +155,7 @@ const ChatPanel = ({isOpen, onClose}) => {
                         <button
                             type="submit"
                             className="bg-accent hover:bg-accent-hover text-white p-2 rounded-lg transition-colors flex-shrink-0"
-                            onClick={handleSend}
+                            disabled={isLoading}
                         >
                             <PaperAirplaneIcon className="w-5 h-5" />
                         </button>

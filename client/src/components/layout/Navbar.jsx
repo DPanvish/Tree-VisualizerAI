@@ -128,11 +128,6 @@ const Navbar = () => {
 
                     {/* User Profile & Logout */}
                     <div className="flex items-center space-x-3">
-                        <img
-                            className="w-8 h-8 rounded-full object-cover"
-                            src="https://via.placeholder.com/150"
-                            alt="User Profile"
-                        />
                         <div className="hidden md:flex flex-col text-right">
                         <span className="text-sm font-medium text-text-primary">
                             {user ? user.name : "Guest"}
