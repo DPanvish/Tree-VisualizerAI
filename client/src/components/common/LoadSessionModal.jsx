@@ -141,7 +141,7 @@ const LoadSessionModal = ({isOpen, onClose}) => {
 
                                 <button
                                     onClick={(e) => handleDelete(e, session.id, session.name)}
-                                    className="text-text-secondary hover:text-red-500 transition-colors p1"
+                                    className="text-text-secondary hover:text-red-500 transition-colors p1 cursor-pointer"
                                 >
                                     <TrashIcon className="w-5 h-5" />
                                 </button>
@@ -152,7 +152,7 @@ const LoadSessionModal = ({isOpen, onClose}) => {
 
                 <button
                     onClick={onClose}
-                    className="mt-6 w-full bg-bg-primary hover:bg-bg-secondary text-text-primary font-medium py-2 px-4 rounded-lg border border-border-accent transition-colors"
+                    className="mt-6 w-full bg-bg-primary hover:bg-bg-secondary text-text-primary font-medium py-2 px-4 rounded-lg border border-border-accent transition-colors cursor-pointer"
                 >
                     Close
                 </button>

@@ -14,18 +14,6 @@ const buildAdjacencyList = (nodes, edges) => {
     const adj = new Map();
     nodes.forEach(node => adj.set(node.id, {left: null, right: null, data: node.data.label}));
 
-    // edges.forEach(edge => {
-    //     const parent = adj.get(edge.source);
-    //
-    //     if (parent) {
-    //         if (!parent.left) {
-    //             parent.left = edge.target;
-    //         } else if (!parent.right) {
-    //             parent.right = edge.target;
-    //         }
-    //     }
-    // });
-
     // Group children by parent
     const childrenMap = new Map();
     edges.forEach(({source, target}) => {
@@ -39,12 +27,23 @@ const buildAdjacencyList = (nodes, edges) => {
     childrenMap.forEach((children, parentId) => {
         if(children.length > 0){
             const parentNode = nodeMap.get(parentId);
-            if(parentNode){
-                // Sort children by their x-position. The first is left, the second is right
-                children.sort((a, b) => (nodeMap.get(a)?.position.x || 0) - (nodeMap.get(b)?.position.x || 0));
-                const parentInAdj = adj.get(parentId);
-                parentInAdj.left = children[0] || null;
-                parentInAdj.right = children[1] || null;
+            const parentInAdj = adj.get(parentId);
+
+            if(parentNode && parentInAdj){
+                if(children.length === 1){
+                    const childId = children[0];
+                    const childNode = nodeMap.get(childId);
+
+                    if(childNode && childNode.position.x < parentNode.position.x){
+                        parentInAdj.left = childId;
+                    }else{
+                        parentInAdj.right = childId;
+                    }
+                }else{
+                    children.sort((a, b) => (nodeMap.get(a)?.position.x || 0) - (nodeMap.get(b)?.position.x || 0));
+                    parentInAdj.left = children[0] || null;
+                    parentInAdj.right = children[1] || null;
+                }
             }
         }
     })

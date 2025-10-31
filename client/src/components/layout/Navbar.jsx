@@ -83,7 +83,7 @@ const Navbar = () => {
                 <div className="flex items-center space-x-3">
                     <button
                         onClick={toggleSidebar}
-                        className="md:hidden text-muted hover:text-text-primary transition-colors"
+                        className="md:hidden text-muted hover:text-text-primary transition-colors cursor-pointer"
                     >
                         <Bars3Icon className="w-6 h-6" />
                     </button>
@@ -97,7 +97,7 @@ const Navbar = () => {
                 <div className="flex items-center space-x-2">
                     <button
                         onClick={handleSave}
-                        className="flex items-center space-x-2 bg-accent hover:bg-accent-hover text-white font-medium py-2 px-3 rounded-lg text-sm transition-colors"
+                        className="flex items-center space-x-2 bg-accent hover:bg-accent-hover text-white font-medium py-2 px-3 rounded-lg text-sm transition-colors cursor-pointer"
                     >
                         <ArrowDownTrayIcon className="w-5 h-5" />
                         <span className="hidden sm:inline">Save Tree</span>
@@ -105,7 +105,7 @@ const Navbar = () => {
 
                     <button
                         onClick={handleLoad}
-                        className="flex items-center space-x-2 bg-bg-primary hover:bg-bg-secondary text-text-primary font-medium py-2 px-3 rounded-lg border border-border-accent text-sm transition-colors"
+                        className="flex items-center space-x-2 bg-bg-primary hover:bg-bg-secondary text-text-primary font-medium py-2 px-3 rounded-lg border border-border-accent text-sm transition-colors cursor-pointer"
                     >
                         <FolderArrowDownIcon className="w-5 h-5" />
                         <span className="hidden sm:inline">Load Tree</span>
@@ -117,7 +117,7 @@ const Navbar = () => {
                     {/* Theme Toggle Button */}
                     <button
                         onClick={toggleTheme}
-                        className="text-text-secondary hover:text-text-primary p-2 rounded-full hover:bg-bg-primary transition-colors"
+                        className="text-text-secondary hover:text-text-primary p-2 rounded-full hover:bg-bg-primary transition-colors cursor-pointer"
                     >
                         {theme === "light" ? (
                             <MoonIcon className="w-5 h-5" />
@@ -139,7 +139,7 @@ const Navbar = () => {
 
                         <button
                             onClick={handleLogout}
-                            className="hidden md:flex items-center space-x-2 text-text-secondary hover:text-text-primary transition-colors"
+                            className="hidden md:flex items-center space-x-2 text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
                         >
                             <ArrowLeftOnRectangleIcon className="h-5 w-5" />
                             <span>Logout</span>

@@ -15,7 +15,7 @@ import { addNode, deleteNode, editNode, resetTree, animateTraversal } from "../.
 const SidebarButton = ({icon: Icon, label, onClick}) => (
     <button
         onClick={onClick}
-        className="flex items-center space-x-3 w-full p-2 rounded-lg text-text-primary hover:bg-bg-primary transition-colors"
+        className="flex items-center space-x-3 w-full p-2 rounded-lg text-text-primary hover:bg-bg-primary transition-colors cursor-pointer"
     >
         <Icon className="w-5 h-5 text-text-secondary" />
         <span className="text-sm font-medium">{label}</span>
@@ -102,7 +102,7 @@ const LeftSidebar = () => {
             <div className="mt-auto pt-4">
                 <button
                     onClick={handleResetTree}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm"
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm cursor-pointer"
                 >
                     Reset Tree
                 </button>

@@ -40,17 +40,33 @@ const TreeVisualizer = () => {
     // This function validates a new connection before it's made
     const isValidConnection = useCallback(
         (connection) => {
-            // Count existing outgoing edges from the source node
-            const outgoingEdges = edges.filter((edge) => edge.source === connection.source).length;
-
-            // A node cannot connect to itself
+            // Rule 1: A node cannot connect to itself
             if(connection.source === connection.target){
                 return false;
             }
 
-            // A node can have maximum of two children
+            // Rule 2: A node can have maximum of two children
+            const outgoingEdges = edges.filter((edge) => edge.source === connection.source).length;
             if(outgoingEdges >= 2){
                 return false;
+            }
+
+            // Rule 3: A node cannot have more than one parent
+            const incomingEdges = edges.filter(edge => edge.target === connection.target).length;
+            if(incomingEdges > 0){
+                return false;
+            }
+
+            // Rule 4: Prevent cycles. A node cannot be connected to one of its ansestors
+            const parentMap = new Map(edges.map(edge => [edge.target, edge.source]));
+            let currentNodeId = connection.source;
+            while(currentNodeId){
+                // Traverse up the tree to find the parent
+                const parentNodeId = parentMap.get(currentNodeId);
+                if(parentNodeId === connection.target){
+                    return false;
+                }
+                currentNodeId = parentNodeId;
             }
 
             return true;

@@ -50,7 +50,7 @@ const SignupPage = () => {
                 {/* Theme Toggle Button */}
                 <button
                     onClick={toggleTheme}
-                    className="absolute top-6 right-6 text-text-secondary hover:text-text-primary p-2 rounded-full hover:bg-bg-secondary transition-colors"
+                    className="absolute top-6 right-6 text-text-secondary hover:text-text-primary p-2 rounded-full hover:bg-bg-secondary transition-colors cursor-pointer"
                     aria-label="Toggle Theme"
                 >
                     {theme === "light" ? (
@@ -122,7 +122,7 @@ const SignupPage = () => {
 
                     <button
                         type="submit"
-                        className="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                        className="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2 px-4 rounded-lg transition-colors cursor-pointer"
                     >
                         Sign Up
                     </button>
@@ -130,7 +130,7 @@ const SignupPage = () => {
 
                 <p className="text-sm text-text-secondary text-center mt-4">
                     Already have an account?{" "}
-                    <span onClick={() => navigate("/login")} className="text-accent hover:underline">
+                    <span onClick={() => navigate("/login")} className="text-accent hover:underline cursor-pointer">
                         Login
                     </span>
                 </p>

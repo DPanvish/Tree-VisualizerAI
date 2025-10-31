@@ -26,15 +26,17 @@ const ChatPanel = ({isOpen, onClose}) => {
     const {nodes, edges} = useSelector((state) => state.tree);
     const {token} = useSelector((state) => state.auth);
 
+    // Local state for the input field and loading indicator
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    // Auto scroll to bottom
+    // Ref to the end of the message list for auto-scrolling
     const messageEndRef = useRef(null);
     const scrollToBottom = () => {
         messageEndRef.current?.scrollIntoView({behavior: "smooth"});
     }
 
+    // Effect to auto-scroll whenever a new message is added to the list
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
@@ -42,24 +44,26 @@ const ChatPanel = ({isOpen, onClose}) => {
 
     // Dispatch handlers
     const handleSend = async() => {
-        if(input.trim() === ""){
-            return;
-        }
-
         setIsLoading(true);
-        // Create new message object
-        const userMessage = {
-            id: `user_${Date.now()}`,
-            role: "user",
-            content: input.trim(),
-            timestamp: new Date().toISOString(),
-        };
-
-        // Dispatch the user's message to the Redux store
-        dispatch(addMessage(userMessage));
-        setInput("");
-
         try{
+            // Prevent sending empty messages
+            if(input.trim() === ""){
+                return;
+            }
+
+            // Create a new message object for the user's input
+            const userMessage = {
+                id: `user_${Date.now()}`,
+                role: "user",
+                content: input.trim(),
+                timestamp: new Date().toISOString(),
+            };
+
+            // Optimistically update the UI by dispatching the user's message immediately
+            dispatch(addMessage(userMessage));
+            setInput("");
+
+            // Prepare the request body for the API call
             const body = {
                 message: userMessage.content,
                 treeState: {nodes, edges},
@@ -69,13 +73,16 @@ const ChatPanel = ({isOpen, onClose}) => {
                 headers: {Authorization: `Bearer ${token}`}
             };
 
+            // Make the API call to the chat endpoint
             const response = await axios.post("http://16.16.211.73:5000/api/chat", body, config);
 
+            // On a successful response, process the AI's message and any tree updates
             if(response.data.status === "success"){
                 const {aiMessage, newTreeState} = response.data.data;
 
                 dispatch(addMessage(aiMessage));
 
+                // If the AI provided a new tree state, update the visualizer
                 if(newTreeState){
                     dispatch(setTreeState(newTreeState));
                 }
@@ -83,12 +90,16 @@ const ChatPanel = ({isOpen, onClose}) => {
         }catch(err){
             const message = err.response?.data?.message || "Chat request failed";
             toast.error(message);
-        }finally{
+        } finally {
+            // Always ensure the loading state is turned off after the request completes
             setIsLoading(false);
         }
     }
 
-    // Export Chat
+    /**
+     * Handles the logic for exporting the user's entire chat history.
+     * It fetches the data from the server and triggers a file download in the browser.
+     */
     const handleExportChat = async() => {
         try{
             const config = {
@@ -97,10 +108,10 @@ const ChatPanel = ({isOpen, onClose}) => {
 
             const response = await axios.get("http://16.16.211.73:5000/api/chat/export", config);
 
-            // Create a blob from the response data
+            // Create a Blob from the plain text response data
             const blob = new Blob([response.data], {type: "text/plain"});
 
-            // Create alink element to trigger the download
+            // Create a temporary link element to trigger the browser's download functionality
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
             const timestamp = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
@@ -111,7 +122,7 @@ const ChatPanel = ({isOpen, onClose}) => {
             link.click();
             document.body.removeChild(link);
 
-            // Clean up the URL object
+            // Clean up the created object URL to free up memory
             URL.revokeObjectURL(link.href);
 
             toast.success("Chat exported successfully!");
@@ -121,7 +132,9 @@ const ChatPanel = ({isOpen, onClose}) => {
         }
     }
 
-    // Handle Clear chat
+    /**
+     * Handles clearing the current chat session's messages after user confirmation.
+     */
     const handleClearChat = () => {
         if(window.confirm("Are you sure you want to clear the current chat? This action cannot be undone.")){
             dispatch(clearMessages());
@@ -131,13 +144,14 @@ const ChatPanel = ({isOpen, onClose}) => {
 
     return (
         <>
+            {/* Mobile Overlay: Dims the background when the drawer is open on smaller screens */}
             <div
                 className={`fixed inset-0 bg-black bg-opacity-50 z-30 transition-opacity lg:hidden ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
                 onClick={onClose}
                 aria-hidden="true"
             ></div>
 
-
+            {/* Main Chat Panel Container: Functions as a drawer on mobile and a static sidebar on desktop */}
             <aside className={`fixed top-0 right-0 h-full w-80 bg-bg-secondary flex flex-col z-40 transform transition-transform ease-in-out duration-300
             lg:relative lg:translate-x-0 lg:z-auto lg:border-l lg:border-border-accent ${isOpen ? "translate-x-0" : "translate-x-full"}`}>
                 {/* Chat Header */}
@@ -148,7 +162,7 @@ const ChatPanel = ({isOpen, onClose}) => {
                         <button
                             onClick={handleExportChat}
                             type="button"
-                            className="text-text-secondary hover:text-text-primary transition-colors"
+                            className="text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
                             title="Export Chat History"
                         >
                             <ArrowDownOnSquareIcon className="w-6 h-6" />
@@ -157,19 +171,20 @@ const ChatPanel = ({isOpen, onClose}) => {
                         <button
                             onClick={handleClearChat}
                             type="button"
-                            className="text-text-secondary hover:text-red-500 transition-colors"
+                            className="text-text-secondary hover:text-red-500 transition-colors cursor-pointer"
                             title="Clear Chat History"
                         >
                             <TrashIcon className="w-6 h-6" />
                         </button>
                     </div>
 
-                    {/* Close button for moblie */}
-                    <button onClick={onClose} className="text-gray-400 hover:text-white lg:hidden">
+                    {/* Close button for mobile view */}
+                    <button onClick={onClose} className="text-gray-400 hover:text-white lg:hidden transition-colors cursor-pointer">
                         <XMarkIcon className="w-6 h-6" />
                     </button>
                 </div>
 
+                {/* Message List: A scrollable container for all chat messages */}
                 <div className="flex-1 p-4 space-y-4 overflow-y-auto custom-scrollbar">
                     {messages.map((message) => (
                         <div key={message.id}>
@@ -208,7 +223,7 @@ const ChatPanel = ({isOpen, onClose}) => {
                             )}
                         </div>
                     ))}
-                    {/* Typing Indicator */}
+                    {/* Typing Indicator: Displays while waiting for the AI's response */}
                     {isLoading && (
                         <div className="flex items-start space-x-3">
                             <img src={AIAvatar} alt="AI Assistant" className="w-8 h-8 rounded-full border-2 border-border-accent" />
@@ -221,10 +236,11 @@ const ChatPanel = ({isOpen, onClose}) => {
                             </div>
                         </div>
                     )}
+                    {/* Empty div used as a reference point for auto-scrolling to the bottom */}
                     <div ref={messageEndRef} />
                 </div>
 
-                {/* Chat Input */}
+                {/* Chat Input Form */}
                 <div className="p-4 border-t border-border-accent shrink-0">
                     <form className="flex space-x-2" onSubmit={(e) => {e.preventDefault(); handleSend()}}>
                         <input
@@ -238,7 +254,7 @@ const ChatPanel = ({isOpen, onClose}) => {
 
                         <button
                             type="submit"
-                            className="bg-accent hover:bg-accent-hover text-white p-2 rounded-lg transition-colors flex-shrink-0"
+                            className="bg-accent hover:bg-accent-hover text-white p-2 rounded-lg transition-colors flex-shrink-0 cursor-pointer"
                             disabled={isLoading}
                         >
                             <PaperAirplaneIcon className="w-5 h-5" />
